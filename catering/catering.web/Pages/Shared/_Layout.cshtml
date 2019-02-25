@@ -1,76 +1,102 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{
+    var app = "EC's Catering Services";
+}
+<!DOCTYPE html>
+<html ng-app="app">
 <head>
+    <base href="~/" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - catering.web</title>
 
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
-              crossorigin="anonymous"
-              integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE="/>
-    </environment>
-    <link rel="stylesheet" href="~/css/site.css" />
+
+    <link rel="stylesheet" href="~/app/vendor-bundle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/app/customer.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">catering.web</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
+<body style="height:100vh; display:flex; flex-direction:column;">
+    <div style="flex: 1 0 auto;">
+        <div class="container-fluid bg-secondary">
+            <header class="py-3" style="border-bottom: 1px inset silver;">
+                <div class="row flex-nowrap justify-content-between align-items-center">
+
+                    <div class="col-6 text-left text-white">
+                        <a class="blog-header-logo text-white" href="@Url.Content("~/Home/Index")">
+                            <h3>@app</h3>
+                        </a>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end align-items-center">
+
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a class="btn btn-sm btn-outline-light" href="@Url.Content("~/")Account/Login">
+                                <span class="fa fa-fw fa-sign-in"></span>&nbsp;Sign In
+                            </a>
+                            <text>&nbsp;</text>
+                            <a class="btn btn-sm btn-outline-light" href="@Url.Content("~/")Account/Register">
+                                <span class="fa fa-fw fa-edit"></span>&nbsp;Register
+                            </a>
+                        }
+                        else
+                        {
+                            <form method="post" action="@Url.Content("~/")Account/Logout">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-light">
+                                    <span class="fa fa-fw fa-sign-out"></span>&nbsp;Sign Out
+                                </button>
+                            </form>
+                        }
+                    </div>
                 </div>
+            </header>
+            <div class="nav-scroller py-2 mb-2">
+                <nav class="nav d-flex justify-content-between">
+                    <a class="p-2 btn-outline-light" href="@Url.Content("~/Home/Index")">
+                        <span class="fa fa-fw fa-home"></span>&nbsp;Home
+                    </a>
+                    <a class="p-2 btn-outline-light" href="@Url.Content("~/")Packages">
+                        <span class="fa fa-fw fa-list-alt"></span>&nbsp;Packages
+                    </a>
+                    <a class="p-2 btn-outline-light" href='@Url.Content("~/")Reservation'>
+                        <span class="fa fa-fw fa-cube"></span>&nbsp;Book Now
+                    </a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="p-2 btn-outline-light" href="@Url.Content("~/")MyReservations">
+                            <span class="fa fa-fw fa-cubes"></span>&nbsp;My Reservations
+                        </a>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <a class="p-2 btn-outline-light" href="@Url.Content("~/")Administration">
+                                <span class="fa fa-fw fa-lock"></span>&nbsp;Administration
+                            </a>
+                        }
+                    }
+
+                </nav>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
+        </div>
+
+        <main role="main" class="container-fluid" style="background-color:white;padding-top:5px; padding-bottom:5px;">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2019 - catering.web - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
+
+    <footer class="blog-footer bg-secondary text-white" style="flex-shrink: 0; padding: 30px;">
+        Contact #: 09876543322
+        Email: catering@web.com
+        Smart Padala: 18241629371236
+        @*<p>Blog template built for <a href="https://getbootstrap.com/">Bootstrap</a> by <a href="https://twitter.com/mdo">@@mdo</a>.</p>
+            <p>
+                <a href="#">Back to top</a>
+            </p>*@
     </footer>
 
-    <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha256-E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=">
-        </script>
-    </environment>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+
+    <script src="~/app/vendor-bundle.js" asp-append-version="true"></script>
+    <script src="~/app/customer.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -4,7 +4,9 @@
   "description": "catering",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:dev": "webpack --display-error-details",
+    "build:dev-watch": "webpack --display-error-details --watch"
   },
   "repository": {
     "type": "git",
@@ -21,9 +23,14 @@
   "homepage": "https://github.com/cayroso/capstone-catering#readme",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.7.2",
+    "angular": "^1.7.7",
+    "angular-toastr": "^2.1.1",
+    "angular-ui-bootstrap": "^2.5.6",
     "bootstrap": "^4.3.1",
     "bootstrap-material-design": "^4.1.1",
+    "fullcalendar": "^3.10.0",
     "jquery": "^3.3.1",
+    "moment": "^2.24.0",
     "popper.js": "^1.14.7"
   },
   "devDependencies": {

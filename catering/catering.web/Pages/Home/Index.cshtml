@@ -4,5 +4,30 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="row" ng-controller="indexController as $ctrl">
+    <div class="col-sm-6">
+        <div class="jumbotron">
+            <h1 class="display-4">Welcome</h1>
+            <p class="lead">
+                Planning a Birthday, Wedding, or just a Celebration?
+                Take the stress out of the occasion by treating your family and friends
+                To our hand prepared catering packages.
 
+            </p>
+            <hr class="my-4">
+            <p>A delicious feast custom prepared to your needs.</p>
+            <a class="btn btn-primary btn-lg" href="@Url.Content("~/")Reservation" role="button">Book Now!</a>
+        </div>
+
+
+
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+</div>

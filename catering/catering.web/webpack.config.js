@@ -9,8 +9,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
-        'patient': './ClientApp/patient/app.js',
-        'caregiver': './ClientApp/caregiver/app.js'
+        'customer': './ClientApp/customer/app.js',
+        'administrator': './ClientApp/administrator/app.js'
     },
     output: {
         filename: '[name].js',
@@ -19,7 +19,7 @@ module.exports = {
         publicPath: '/app/'
     },
 
-    mode: 'development', //'production',
+    mode: 'development', //'production',development
 
     module: {
         rules: [
@@ -51,10 +51,11 @@ module.exports = {
             chunkFilename: '[name]-bundle.css'
         }),
         new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery',
+            'jQuery': 'jquery',
+            'window.$': 'jquery',            
             'window.jQuery': 'jquery',
-            'Popper': 'popper.js/dist/umd/popper'
+            'Popper': 'popper.js/dist/umd/popper',
+            //'jQuery.fullCalendar': 'fullcalendar/dist/fullcalendar'
         })
     ],
     

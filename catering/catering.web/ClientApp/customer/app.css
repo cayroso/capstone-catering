@@ -1,0 +1,19 @@
+﻿@import '~@fortawesome/fontawesome-free/css/fontawesome.css';
+@import '~@fortawesome/fontawesome-free/css/solid.css';
+
+@import '~bootstrap/dist/css/bootstrap.css';
+@import '~bootstrap-material-design/dist/css/bootstrap-material-design.css';
+
+@import '~fullcalendar/dist/fullcalendar.css';
+
+.patient {
+    color: green;
+}
+
+.all {
+    color: blue;
+}
+
+.single {
+    color: gainsboro;
+}
