@@ -56,7 +56,10 @@ module.exports = {
             'window.jQuery': 'jquery',
             'Popper': 'popper.js/dist/umd/popper',
             //'jQuery.fullCalendar': 'fullcalendar/dist/fullcalendar'
-        })
+        }),
+        new CopyWebpackPlugin([{
+            from: './ClientApp/**/*.html'
+        }])
     ],
     
     optimization: {        

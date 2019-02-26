@@ -1,0 +1,194 @@
+﻿
+<div class="row" ng-controller="reservationController as $ctrl">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="bg-light m-1">
+                <div id='calendar'></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+
+        <!-- package -->
+        <div class="card bg-warning">
+            <div class="card-header text-white">
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h4>Package Calculator</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-right">
+                            <button ng-click="$ctrl.reset()" class="btn btn-default">Reset</button>
+                            <button ng-click="$ctrl.processForm()" ng-disabled="!$ctrl.pricing.total" class="btn btn-primary">Reserve</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body bg-light">
+                <div class="form-horizontal">
+                    <div class="row form-group">
+                        <label class="col-sm-4 control-label text-right">Package</label>
+                        <div class="col-sm-8">
+                            <select name="package" id="package" ng-model="$ctrl.formData.package" ng-change="$ctrl.setPackage()" class="form-control"
+                                    ng-options="option.name for option in $ctrl.lookups.packages track by option.packageId"></select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-sm-4 control-label text-right">Event Start</label>
+                        <div class="col-sm-8">
+                            <input type="datetime-local" ng-model="$ctrl.formData.dateStart" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="col-sm-4 control-label text-right">Event End</label>
+                        <div class="col-sm-8">
+                            <input type="datetime-local" ng-model="$ctrl.formData.dateEnd" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <table ng-if="$ctrl.formData.package" class="table table-bordered table-condensed table-sm mt-1">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Count</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-right">Extended Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                Guest
+                            </td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.guestCount" min="0" class="form-control text-center" />
+                            </td>
+                            <td colspan="2">
+                                <button ng-disabled="!$ctrl.pricing.guestCount" ng-click="$ctrl.autoAllocate()" class="btn btn-danger">Allocate</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Plates</td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.plateCount" ng-change="$ctrl.calculate()" min="0" class="form-control text-center" />
+                            </td>
+                            <td class="text-right">
+                                {{$ctrl.pricing.plate | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ ($ctrl.pricing.plate * $ctrl.pricing.plateCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Spoons</td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.spoonCount" ng-change="$ctrl.calculate()" min="0" class="form-control text-center" />
+                            </td>
+                            <td class="text-right">
+                                {{$ctrl.pricing.spoon | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ ($ctrl.pricing.spoon * $ctrl.pricing.spoonCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Forks</td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.forkCount" ng-change="$ctrl.calculate()" min="0" class="form-control text-center" />
+                            </td>
+                            <td class="text-right">
+                                {{$ctrl.pricing.fork | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ ($ctrl.pricing.fork * $ctrl.pricing.forkCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Glasses</td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.glassCount" ng-change="$ctrl.calculate()" min="0" class="form-control text-center" />
+                            </td>
+                            <td class="text-right">
+                                {{$ctrl.pricing.glass | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ ($ctrl.pricing.glass * $ctrl.pricing.glassCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Chairs</td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.chairCount" ng-change="$ctrl.calculate()" min="0" class="form-control text-center" />
+                            </td>
+                            <td class="text-right">
+                                {{$ctrl.pricing.chair | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ ($ctrl.pricing.chair * $ctrl.pricing.chairCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tables</td>
+                            <td>
+                                <input type="number" ng-model="$ctrl.pricing.tableCount" ng-change="$ctrl.calculate()" min="0" class="form-control text-center" />
+                            </td>
+                            <td class="text-right">
+                                {{$ctrl.pricing.table | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ ($ctrl.pricing.table * $ctrl.pricing.tableCount) | number:'2'}}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Flowers</td>
+                            <td>
+                                <input type="checkbox" ng-model="$ctrl.pricing.hasFlower" ng-change="$ctrl.calculate()" />
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span ng-switch="$ctrl.pricing.hasFlower">
+                                    <span ng-switch-when="true">
+                                        {{$ctrl.pricing.flower | number:'2'}}
+                                    </span>
+                                    <span ng-switch-default>
+                                        0
+                                    </span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Sound System</td>
+                            <td>
+                                <input type="checkbox" ng-model="$ctrl.pricing.hasSoundSystem" ng-change="$ctrl.calculate()" />
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span ng-switch="$ctrl.pricing.hasSoundSystem">
+                                    <span ng-switch-when="true">
+                                        {{$ctrl.pricing.soundSystem | number:'2'}}
+                                    </span>
+                                    <span ng-switch-default>
+                                        0
+                                    </span>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-right" colspan="3">Total Price</th>
+                            <th class="text-right">
+                                {{ $ctrl.pricing.total | number:'2'}}
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+

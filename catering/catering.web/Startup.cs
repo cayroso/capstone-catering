@@ -54,7 +54,9 @@ namespace catering.web
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
+            services
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +77,7 @@ namespace catering.web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseAuthentication();
 
             app.UseMvc(routes=> {
                 routes.MapRoute(name: "Default", template: "{controller}/{action=Index}/{id?}");

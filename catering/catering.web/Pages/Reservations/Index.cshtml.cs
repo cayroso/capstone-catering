@@ -77,6 +77,11 @@ namespace catering.web.Pages.Reservations
 
         public async Task<IActionResult> OnPostReservationAsync([FromBody]ReservationInfo info)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return BadRequest(new { message = "Register or SignIn before booking a catering service." });
+            }
+
             if (info.DateStart > info.DateEnd)
             {
                 return BadRequest(new { message = "Date Start cannot exceed Date End." });
@@ -107,7 +112,7 @@ namespace catering.web.Pages.Reservations
                 return BadRequest(new { message, conflicts });
             }
 
-            var user = _appDbContext.Users.First(p => p.Email == User.Identity.Name);
+            var user = _appDbContext.Users.First(p => p.UserName == User.Identity.Name);
             var package = _appDbContext.Packages.SingleOrDefault(p => p.PackageId == info.PackageId);
 
             var reservationId = Guid.NewGuid().ToString();

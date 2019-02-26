@@ -4,5 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
+@Html.AntiForgeryToken()
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div ng-include="'app/clientapp/customer/templates/reservation.html'">
+            rawr
+        </div>
+    </div>
+</div>
