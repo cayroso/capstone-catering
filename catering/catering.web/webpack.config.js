@@ -6,12 +6,13 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-
 module.exports = {
+
     entry: {
-        'customer': './ClientApp/customer/app.js',
+        'customer': './ClientApp/customer/main.js',
         'administrator': './ClientApp/administrator/app.js'
     },
+
     output: {
         filename: '[name].js',
         chunkFilename: '[name]-bundle.js',
@@ -19,7 +20,7 @@ module.exports = {
         publicPath: '/app/'
     },
 
-    mode: 'development', //'production',development
+    mode: process.env.NODE_ENV, //'development', //'production',development
 
     module: {
         rules: [
@@ -28,7 +29,7 @@ module.exports = {
                 use: [
                     //{ loader: 'style-loader' },
                     { loader: MiniCssExtractPlugin.loader, options: { module: true } },
-                    { loader: 'css-loader'},
+                    { loader: 'css-loader' },
                     //{ loader: 'sass-loader' }
                 ]
             },
@@ -45,14 +46,15 @@ module.exports = {
             }
         ]
     },
-    plugins: [        
+
+    plugins: [
         new MiniCssExtractPlugin({
             filename: '[name].css',
             chunkFilename: '[name]-bundle.css'
         }),
         new webpack.ProvidePlugin({
             'jQuery': 'jquery',
-            'window.$': 'jquery',            
+            'window.$': 'jquery',
             'window.jQuery': 'jquery',
             'Popper': 'popper.js/dist/umd/popper',
             //'jQuery.fullCalendar': 'fullcalendar/dist/fullcalendar'
@@ -61,11 +63,12 @@ module.exports = {
             from: './ClientApp/**/*.html'
         }])
     ],
-    
-    optimization: {        
+
+    optimization: {
         splitChunks: {
             name: 'vendor',
-            chunks: 'all'            
+            chunks: 'all'
         }
     }
+
 };

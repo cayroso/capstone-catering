@@ -74,6 +74,7 @@ namespace catering.web.Pages.Account
 
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Name, user.UserName),
                 };

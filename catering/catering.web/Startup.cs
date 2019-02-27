@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using catering.web.Data;
+using catering.web.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -57,6 +58,8 @@ namespace catering.web
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +81,11 @@ namespace catering.web
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<NotificationHub>("/notificationHub");
+            });
 
             app.UseMvc(routes=> {
                 routes.MapRoute(name: "Default", template: "{controller}/{action=Index}/{id?}");

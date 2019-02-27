@@ -41,6 +41,11 @@ namespace catering.web.Data
             //    .IsRequired();
         }
     }
+    public static class AppRoles
+    {
+        public static string Administrator = "administrator";
+        public static string Customer = "customer";
+    }
 
     public static class AppDbInitializer
     {
@@ -51,7 +56,10 @@ namespace catering.web.Data
                 return;
             }
 
-            context.AddRange(new Role { RoleId = "administrator", Name = "Administrator" }, new Role { RoleId = "customer", Name = "Customer" });
+            context.AddRange(
+                new Role { RoleId = AppRoles.Administrator, Name = "Administrator" },
+                new Role { RoleId = AppRoles.Customer, Name = "Customer" }
+                );
 
             var users = new List<User>(new[]
             {
@@ -357,7 +365,7 @@ namespace catering.web.Data
         Pending = 0,
         Paid = 1,
         Complete = 2,
-        Abandoned = 3
+        Cancelled = 3
     }
 
     public class ReservationNote

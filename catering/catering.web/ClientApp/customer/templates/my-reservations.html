@@ -1,3 +1,13 @@
-﻿<div ng-controller="myreservationController as $ctrl">
+﻿<div ng-controller="myReservationsController as $ctrl">
     My Reservations
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <tbody>
+                <tr ng-repeat="item in $ctrl.items">
+                    <td>{{item}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

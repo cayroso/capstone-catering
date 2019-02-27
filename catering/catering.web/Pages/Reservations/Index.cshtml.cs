@@ -98,7 +98,7 @@ namespace catering.web.Pages.Reservations
 
             var conflicts = _appDbContext.Reservations
                             .Where(p =>
-                                p.ReservationStatus != ReservationStatus.Abandoned
+                                p.ReservationStatus != ReservationStatus.Cancelled
                                 &&
                                 ((info.DateStart > p.DateStart && info.DateStart < p.DateEnd) ||
                                 (info.DateEnd > p.DateStart && info.DateEnd < p.DateEnd))
