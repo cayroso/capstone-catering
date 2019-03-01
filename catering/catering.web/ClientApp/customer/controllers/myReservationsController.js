@@ -24,7 +24,7 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal) {
                     return {
                         totalPrice: vm.selectedItem.totalPrice,
                         amountPaid: vm.selectedItem.amountPaid,
-                        referenceNumber: vm.selectedItem.referenceNumber,
+                        referenceNumber: vm.selectedItem.referenceNumber
                     };
                 }
             }
@@ -66,7 +66,7 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal) {
             .then(function (resp) {
                 vm.items = resp.data;
             }, function (err) {
-                debugger;
+                alert('error occured');
             });
     }
 
