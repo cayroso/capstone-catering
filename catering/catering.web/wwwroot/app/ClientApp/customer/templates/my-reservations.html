@@ -1,13 +1,86 @@
-﻿<div ng-controller="myReservationsController as $ctrl">
+﻿<div ng-controller="myReservationsController as $ctrl" id="myReservations">
     My Reservations
-
+    <aside></aside>
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Package</th>
+                    <th>Start</th>
+                    <th>End</th>
+
+                    <th>Due</th>
+                    <th>Paid</th>
+                    <th>Total Price</th>
+                    <th>Reference Number</th>
+                    <th ng-if="$ctrl.selectedItem"></th>
+                    <!--<th>Guest</th>
+                    <th>Plate</th>
+                    <th>Spoon</th>
+                    <th>Fork</th>
+                    <th>Glass</th>
+                    <th>Chair</th>
+                    <th>Table</th>
+
+                    <th>Sound System</th>
+                    <th>Flowers</th>-->
+                </tr>
+            </thead>
             <tbody>
-                <tr ng-repeat="item in $ctrl.items">
-                    <td>{{item}}</td>
+                <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)">
+                    <td>{{item.reservationStatus}}</td>
+                    <td>{{item.package.name}}</td>
+                    <td>{{item.dateStart | date:'medium'}}</td>
+                    <td>{{item.dateEnd | date:'medium'}}</td>
+
+                    <td>{{item.amountDue | number:'2'}}</td>
+                    <td>{{item.amountPaid | number:'2'}}</td>
+                    <td>{{item.totalPrice | number:'2'}}</td>
+                    <td>{{item.referenceNumber}}</td>
+
+                    <td ng-if="$ctrl.selectedItem">
+                        <div ng-if="$ctrl.selectedItem === item">
+                            <button ng-click="$ctrl.setPayment()" class="btn btn-sm btn-outline-info">Set Payment</button>
+                            <button ng-click="$ctrl.cancelReservation()" class="btn btn-sm btn-outline-danger">Cancel</button>
+
+                        </div>
+                    </td>
+                    <!--<td>{{item.guestCount | number:'2'}}</td>
+                    <td>{{item.plateCount | number:'2'}}</td>
+                    <td>{{item.spoonCount | number:'2'}}</td>
+                    <td>{{item.forkCount | number:'2'}}</td>
+                    <td>{{item.glassCount | number:'2'}}</td>
+                    <td>{{item.chairCount | number:'2'}}</td>
+                    <td>{{item.tableCount | number:'2'}}</td>
+
+                    <td>{{item.hasSoundSystem}}</td>
+                    <td>{{item.hasFlowers}}</td>-->
+
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <script type="text/ng-template" id="modalPayment.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Payment Details</h3>
+        </div>
+        <div class="modal-body">
+            <div>
+                Amount Paid: <input ng-model="payment.amountPaid" class="form-control" />
+
+            </div>
+            <div>
+                Reference Number: <textarea ng-model="payment.referenceNumber" rows="2" class="form-control" />
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 </div>
+
+

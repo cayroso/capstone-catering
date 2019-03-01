@@ -1,0 +1,81 @@
+﻿@{
+    var app = "EC's Catering Services";
+}
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <base href="~/" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - @app</title>
+
+
+    <link rel="stylesheet" href="~/app/vendor-bundle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/app/administrator.css" asp-append-version="true" />
+</head>
+<body ng-controller="mainController as $main" id="page-top" style="height:100vh; display:flex; flex-direction:column;">
+
+    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+        <a class="navbar-brand mr-1" href="@Url.Content("~/")">Start Bootstrap</a>
+        <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" >
+            <i class="fas fa-bars"></i>
+        </button>        
+    </nav>
+
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="sidebar navbar-nav">
+            <li class="nav-item">
+                <a ng-click="$main.setPage('dashboard.html', $event)" class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a ng-click="$main.setPage('reservations.html', $event)" class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Reservations</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a ng-click="$main.setPage('customers.html', $event)" class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a ng-click="$main.setPage('packages.html', $event)" class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Packages</span>
+                </a>
+            </li>
+        </ul>
+        <div id="content-wrapper">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+            <!-- /.container-fluid -->
+            <!-- Sticky Footer -->
+            @*<footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Your Website 2018</span>
+                    </div>
+                </div>
+            </footer>*@
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <script src="~/app/vendor-bundle.js" asp-append-version="true"></script>
+    <script src="~/app/administrator.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

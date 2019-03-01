@@ -10,7 +10,7 @@ module.exports = {
 
     entry: {
         'customer': './ClientApp/customer/main.js',
-        'administrator': './ClientApp/administrator/app.js'
+        'administrator': './ClientApp/administrator/main.js'
     },
 
     output: {
@@ -29,7 +29,7 @@ module.exports = {
                 use: [
                     //{ loader: 'style-loader' },
                     { loader: MiniCssExtractPlugin.loader, options: { module: true } },
-                    { loader: 'css-loader' },
+                    { loader: 'css-loader' }
                     //{ loader: 'sass-loader' }
                 ]
             },
@@ -55,8 +55,8 @@ module.exports = {
         new webpack.ProvidePlugin({
             'jQuery': 'jquery',
             'window.$': 'jquery',
-            'window.jQuery': 'jquery',
-            'Popper': 'popper.js/dist/umd/popper',
+            'window.jQuery': 'jquery'
+            //'Popper': 'popper.js/dist/umd/popper',
             //'jQuery.fullCalendar': 'fullcalendar/dist/fullcalendar'
         }),
         new CopyWebpackPlugin([{

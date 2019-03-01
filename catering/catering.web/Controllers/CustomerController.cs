@@ -39,13 +39,19 @@ namespace catering.web.Controllers
             return Ok(items);
         }
 
-        [HttpPost("payReservation/{id}")]
-        public async Task<IActionResult> PayReservation(string id, decimal amountPaid, string referenceNumber)
+        public class PayReservationInfo
+        {
+            public string Id { get; set; }
+            public decimal AmountPaid { get; set; }
+            public string ReferenceNumber { get; set; }
+        }
+        [HttpPost("reservation/pay")]
+        public async Task<IActionResult> PayReservation([FromBody]PayReservationInfo info)
         {
             var reservation = await _appDbContext
                 .Reservations
                 .Include(p => p.Notes)
-                .FirstOrDefaultAsync(p => p.UserId == GetUserId() && p.ReservationId == id);
+                .FirstOrDefaultAsync(p => p.UserId == GetUserId() && p.ReservationId == info.Id);
 
 
             if (reservation == null)
@@ -54,8 +60,8 @@ namespace catering.web.Controllers
             }
 
             reservation.ReservationStatus = ReservationStatus.Paid;
-            reservation.AmountPaid = amountPaid;
-            reservation.ReferenceNumber = referenceNumber;
+            reservation.AmountPaid = info.AmountPaid;
+            reservation.ReferenceNumber = info.ReferenceNumber;
 
             await _appDbContext.SaveChangesAsync();
 

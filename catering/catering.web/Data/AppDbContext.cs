@@ -43,8 +43,8 @@ namespace catering.web.Data
     }
     public static class AppRoles
     {
-        public static string Administrator = "administrator";
-        public static string Customer = "customer";
+        public const string Administrator = "administrator";
+        public const string Customer = "customer";
     }
 
     public static class AppDbInitializer

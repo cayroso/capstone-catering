@@ -33,9 +33,9 @@ app.controller('mainController', function (toastr) {
 
     function init() {
         //$(document).ready(function () {
-            $('body').bootstrapMaterialDesign();
+        //$('body').bootstrapMaterialDesign();
 
-            toastr.success('oye');
+        //toastr.success('oye');
         //}); 
     }
 

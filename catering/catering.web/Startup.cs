@@ -82,14 +82,15 @@ namespace catering.web
             app.UseCookiePolicy();
             app.UseAuthentication();
 
+            app.UseMvc(routes=> {
+                routes.MapRoute(name: "Default", template: "{controller}/{action=Index}/{id?}");
+            });
+
             app.UseSignalR(routes =>
             {
                 routes.MapHub<NotificationHub>("/notificationHub");
             });
 
-            app.UseMvc(routes=> {
-                routes.MapRoute(name: "Default", template: "{controller}/{action=Index}/{id?}");
-            });
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿@{
+﻿@using catering.web.Data
+
+@{
     var app = "EC's Catering Services";
 }
 <!DOCTYPE html>
@@ -6,8 +8,9 @@
 <head>
     <base href="~/" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - catering.web</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>@ViewData["Title"] - @app</title>
 
 
     <link rel="stylesheet" href="~/app/vendor-bundle.css" asp-append-version="true" />
@@ -64,9 +67,9 @@
                         <a class="p-2 btn-outline-light" href="@Url.Content("~/MyReservations")">
                             <span class="fa fa-fw fa-cubes"></span>&nbsp;My Reservations
                         </a>
-                        @if (User.IsInRole("Administrator"))
+                        @if (User.IsInRole(AppRoles.Administrator))
                         {
-                            <a class="p-2 btn-outline-light" href="@Url.Content("~/")Administration">
+                            <a class="p-2 btn-outline-light" href="@Url.Content("~/Administrator")">
                                 <span class="fa fa-fw fa-lock"></span>&nbsp;Administration
                             </a>
                         }

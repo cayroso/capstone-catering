@@ -83,7 +83,7 @@ namespace catering.web.Pages.Account
                 {
                     user.UserRoles.ToList().ForEach(p =>
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, p.Role.Name));
+                        claims.Add(new Claim(ClaimTypes.Role, p.Role.RoleId));
                     });
                 }
 

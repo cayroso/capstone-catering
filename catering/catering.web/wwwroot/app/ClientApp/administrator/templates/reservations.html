@@ -1,0 +1,50 @@
+﻿<div ng-controller="reservationsController as $ctrl">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Package</th>
+                    <th>Start</th>
+                    <th>End</th>
+
+                    <th>Due</th>
+                    <th>Paid</th>
+                    <th>Total Price</th>
+                    <th>Reference Number</th>
+                    <th ng-if="$ctrl.selectedItem"></th>
+                    <!--<th>Guest</th>
+            <th>Plate</th>
+            <th>Spoon</th>
+            <th>Fork</th>
+            <th>Glass</th>
+            <th>Chair</th>
+            <th>Table</th>
+
+            <th>Sound System</th>
+            <th>Flowers</th>-->
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)" ng-class="{'bg-secondary text-white': $ctrl.selectedItem === item}">
+                    <td>{{item.reservationStatus}}</td>
+                    <td>{{item.package.name}}</td>
+                    <td>{{item.dateStart | date:'medium'}}</td>
+                    <td>{{item.dateEnd | date:'medium'}}</td>
+
+                    <td>{{item.amountDue | number:'2'}}</td>
+                    <td>{{item.amountPaid | number:'2'}}</td>
+                    <td>{{item.totalPrice | number:'2'}}</td>
+                    <td>{{item.referenceNumber}}</td>
+
+                    <td ng-if="$ctrl.selectedItem">
+                        <div ng-if="$ctrl.selectedItem === item" class="btn-group-sm">
+                            <button ng-click="$ctrl.setPayment()" class="btn btn-sm btn-outline-info">Set Comolete</button>
+                            <button ng-click="$ctrl.cancelReservation()" class="btn btn-sm btn-outline-danger">Cancel</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>    
+    </div>
+</div>

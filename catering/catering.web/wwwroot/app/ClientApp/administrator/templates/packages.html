@@ -1,0 +1,27 @@
+﻿<div ng-controller="packagesController as $ctrl">
+    <button class="btn btn-primary mb-3">Add New Package</button>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                   
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat-start="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)" ng-class="{'bg-secondary text-white': $ctrl.selectedItem === item}">
+                    <td rowspan="{{item.items.length+1}}">{{item.name}}</td>
+                    <td rowspan="{{item.items.length+1}}">{{item.description}}</td>
+                </tr>
+                <tr ng-repeat-end="" ng-repeat="subItem in item.items">
+                    <td>{{subItem.name}}</td>
+                </tr>
+
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
