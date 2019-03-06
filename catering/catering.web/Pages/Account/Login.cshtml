@@ -8,14 +8,14 @@
     <div class="col-md-6 col-md-offset-3">
 
         <form method="post" action="~/Account/Login">
-            <h4>Use a local account to log in.</h4>
+            <h4>Login to application</h4>
             <h4>Or Register <a href="@Url.Content("~/Account/Register")">here</a>.</h4>
             <hr>
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Input.Email"></label>
-                <input asp-for="Input.Email" class="form-control">
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <label asp-for="Input.UserName"></label>
+                <input asp-for="Input.UserName" class="form-control">
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Password"></label>
@@ -46,7 +46,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            admin@@gmail.com
+                            administrator
                         </td>
                         <td>
                             1234
@@ -54,7 +54,7 @@
                     </tr>
                     <tr>
                         <td>
-                            user1@@gmail.com
+                            user1
                         </td>
                         <td>
                             1234

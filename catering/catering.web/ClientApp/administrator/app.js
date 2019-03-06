@@ -1,4 +1,5 @@
-﻿import angular from 'angular';
+﻿
+import angular from 'angular';
 import 'angular-ui-bootstrap/dist/ui-bootstrap-tpls';
 
 const app = angular.module('app', [require('angular-animate'), require('angular-toastr'), 'ui.bootstrap']);
@@ -6,7 +7,7 @@ const app = angular.module('app', [require('angular-animate'), require('angular-
 app.controller('mainController', function () {
     const vm = this;
     const pagePrefix = 'app/clientapp/administrator/templates/';
-    vm.page = `${pagePrefix}/packages.html`;
+    vm.page = `${pagePrefix}/reservations.html`;
 
     vm.setPage = function (page, event) {
         //debugger;

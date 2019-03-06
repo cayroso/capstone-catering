@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/app/vendor-bundle.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/app/administrator.css" asp-append-version="true" />
 </head>
-<body ng-controller="mainController as $main" id="page-top" style="height:100vh; display:flex; flex-direction:column;">
+<body ng-controller="mainController as $main" id="page-top" >
 
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
         <a class="navbar-brand mr-1" href="@Url.Content("~/")">Start Bootstrap</a>
@@ -69,9 +69,9 @@
     </div>
     <!-- /#wrapper -->
     <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
+    @*<a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
-    </a>
+    </a>*@
 
     <script src="~/app/vendor-bundle.js" asp-append-version="true"></script>
     <script src="~/app/administrator.js" asp-append-version="true"></script>

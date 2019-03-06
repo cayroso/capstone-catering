@@ -85,6 +85,14 @@ namespace catering.web.Controllers
                 return NotFound();
             }
 
+            var now = DateTime.UtcNow.Date;
+
+            //  cannot cancel if reservation is paid and due tomorrow
+            if(reservation.ReservationStatus == ReservationStatus.Paid && now.AddDays(1) >= reservation.DateStart )
+            {
+                return BadRequest("Reservation is already paid and cannot be cancelled");
+            }
+
             reservation.ReservationStatus = ReservationStatus.Cancelled;
 
             await _appDbContext.SaveChangesAsync();

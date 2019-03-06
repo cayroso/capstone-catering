@@ -1,4 +1,6 @@
 ﻿<div ng-controller="customersController as $ctrl">
+    <h4>Customers</h4>
+    <hr />
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead>
@@ -14,7 +16,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)" ng-class="{'bg-secondary text-white': $ctrl.selectedItem === item}">
+                <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)">
                     <td>{{item.firstName}}</td>
                     <td>{{item.middleName}}</td>
                     <td>{{item.lastName}}</td>

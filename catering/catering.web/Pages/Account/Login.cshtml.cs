@@ -25,8 +25,7 @@ namespace catering.web.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            public string UserName { get; set; }
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
@@ -62,7 +61,7 @@ namespace catering.web.Pages.Account
                     ReturnUrl = returnUrl;
                 }
 
-                var user = await GetUserAsync(Input.Email, Input.Password);
+                var user = await GetUserAsync(Input.UserName, Input.Password);
 
                 if (user == null)
                 {
@@ -109,13 +108,13 @@ namespace catering.web.Pages.Account
         }
 
 
-        private async Task<User> GetUserAsync(string email, string password)
+        private async Task<User> GetUserAsync(string userName, string password)
         {
             var data = await _appDbContext
                     .Users
                     .Include(p => p.UserRoles)
                         .ThenInclude(p => p.Role)
-                    .FirstOrDefaultAsync(p => p.Email == email && p.Password == password);
+                    .FirstOrDefaultAsync(p => p.UserName == userName && p.Password == password);
 
             return data;
         }

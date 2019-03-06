@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using catering.web.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +20,13 @@ namespace catering.web.Controllers
     public class AdministratorController : Controller
     {
         private readonly AppDbContext _appDbContext;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public AdministratorController(AppDbContext appDbContext)
+
+        public AdministratorController(AppDbContext appDbContext, IHostingEnvironment hostingEnvironment)
         {
             _appDbContext = appDbContext;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         #region dashboard
@@ -43,13 +49,13 @@ namespace catering.web.Controllers
             var dashboard = new DashboardInfo
             {
                 Reservations = items,
-                Today = items.Where(p=>p.DateStart.Date == now || p.DateEnd.Date == now).ToList(),
+                Today = items.Where(p => p.DateStart.Date == now || p.DateEnd.Date == now).ToList(),
                 Upcoming = items.Where(p => p.DateStart.Date > now).ToList(),
 
-                 Pending = items.Count(p=>p.ReservationStatus == ReservationStatus.Pending),
-                 Paid = items.Count(p=>p.ReservationStatus == ReservationStatus.Paid),
-                 Completed = items.Count(p=>p.ReservationStatus == ReservationStatus.Complete),
-                 Cancelled = items.Count(p=>p.ReservationStatus == ReservationStatus.Cancelled)
+                Pending = items.Count(p => p.ReservationStatus == ReservationStatus.Pending),
+                Paid = items.Count(p => p.ReservationStatus == ReservationStatus.Paid),
+                Completed = items.Count(p => p.ReservationStatus == ReservationStatus.Complete),
+                Cancelled = items.Count(p => p.ReservationStatus == ReservationStatus.Cancelled)
 
             };
 
@@ -91,6 +97,45 @@ namespace catering.web.Controllers
             return Ok(items);
         }
 
+        [HttpPost("reservations/{id}/complete")]
+        public async Task<IActionResult> SetToComplete(string id)
+        {
+            var data = await _appDbContext
+                .Reservations
+                .FirstOrDefaultAsync(p => p.ReservationId == id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            data.ReservationStatus = ReservationStatus.Complete;
+
+            await _appDbContext.SaveChangesAsync();
+
+            //  TODO: notify via sms that reservation was completed
+            return Ok();
+        }
+
+        [HttpPost("reservations/{id}/cancel")]
+        public async Task<IActionResult> SetToCancel(string id)
+        {
+            var data = await _appDbContext
+                .Reservations
+                .FirstOrDefaultAsync(p => p.ReservationId == id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            data.ReservationStatus = ReservationStatus.Cancelled;
+
+            await _appDbContext.SaveChangesAsync();
+
+            //  TODO: notify via sms that reservation was cancelled
+            return Ok();
+        }
         #endregion
 
         #region packages
@@ -104,6 +149,110 @@ namespace catering.web.Controllers
                 .ToListAsync();
 
             return Ok(items);
+        }
+
+        [HttpPost("packages/item")]
+        public async Task<IActionResult> AddPackageItem([FromBody]AddPackageItemInfo info)
+        {
+            var package = await _appDbContext
+                .Packages
+                .FirstOrDefaultAsync(p => p.PackageId == info.PackageId);
+
+            if (package == null)
+            {
+                return NotFound();
+            }
+
+            var packageItemId = Guid.NewGuid().ToString();
+
+            var packageItem = new PackageItem
+            {
+                PackageItemId = packageItemId,
+                PackageId = info.PackageId,
+                Name = info.Name,
+                Description = info.Description,
+                ImageUrl = ""
+            };
+
+            await _appDbContext.AddAsync(packageItem);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Created(packageItem.PackageItemId, packageItem);
+        }
+
+        [HttpPost("packages/item/{id}/image")]
+        public async Task<IActionResult> UploadImage(string id)
+        {
+            var packageItem = await _appDbContext
+                .PackageItems
+                .FirstOrDefaultAsync(p => p.PackageItemId == id);
+
+            if (packageItem == null)
+            {
+                return NotFound();
+            }
+            var path = _hostingEnvironment.WebRootPath + "/images";
+
+            //  delete existing
+            var oldFileName = Path.Combine(_hostingEnvironment.WebRootPath, packageItem.ImageUrl);
+
+            if (System.IO.File.Exists(oldFileName))
+            {
+                System.IO.File.Delete(oldFileName);
+            }
+
+            var file = HttpContext.Request.Form.Files[0];
+            var stream = file.OpenReadStream();
+            var name = $"{packageItem.PackageItemId}-{file.FileName}";
+
+
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+
+            var fileName = Path.Combine(path, name);
+
+            using (var fs = new FileStream(fileName, FileMode.Create))
+            {
+                await file.CopyToAsync(fs);
+            }
+
+            packageItem.ImageUrl = $"images/{name}";
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("packages/item/{id}/remove")]
+        public async Task<IActionResult> DeletePackageItem(string id)
+        {
+            var item = await _appDbContext
+                .PackageItems
+                .FirstOrDefaultAsync(p => p.PackageItemId == id);
+
+            if(item == null)
+            {
+                return NotFound();
+            }
+
+            //  delete existing image
+            var oldFileName = Path.Combine(_hostingEnvironment.WebRootPath, item.ImageUrl);
+
+            if (System.IO.File.Exists(oldFileName))
+            {
+                System.IO.File.Delete(oldFileName);
+            }
+
+            _appDbContext.Remove(item);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok();
         }
 
         #endregion
@@ -127,5 +276,12 @@ namespace catering.web.Controllers
         public int Paid { get; set; }
         public int Completed { get; set; }
         public int Cancelled { get; set; }
+    }
+
+    public class AddPackageItemInfo
+    {
+        public string PackageId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

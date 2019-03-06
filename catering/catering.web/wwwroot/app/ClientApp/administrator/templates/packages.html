@@ -1,27 +1,85 @@
 ﻿<div ng-controller="packagesController as $ctrl">
-    <button class="btn btn-primary mb-3">Add New Package</button>
+    <h4>Packages</h4>
+    <hr />
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
-                   
-                    <th>Items</th>
+                    <th></th>
+                    <th>Items Name</th>
+                    <th>Item Desc</th>
+                    <th>Item Image</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat-start="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)" ng-class="{'bg-secondary text-white': $ctrl.selectedItem === item}">
+                <tr ng-repeat-start="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)">
                     <td rowspan="{{item.items.length+1}}">{{item.name}}</td>
-                    <td rowspan="{{item.items.length+1}}">{{item.description}}</td>
+                    <td rowspan="{{item.items.length+1}}">{{item.description}} </td>
+                    <td rowspan="{{item.items.length+1}}"><button ng-click="$ctrl.dlgOpenAddPackageItem(item)" class="btn btn-outline-primary">Add Package Item</button></td>
                 </tr>
                 <tr ng-repeat-end="" ng-repeat="subItem in item.items">
                     <td>{{subItem.name}}</td>
+                    <td>{{subItem.description}}</td>
+                    <td>
+                        <img ng-if="subItem.imageUrl" ng-src="{{subItem.imageUrl}}" class="img-fluid img-thumbnail img-responsive" style="width:64px; height:64px;" />
+                    </td>
+                    <td class="btn-group-sm">
+
+                        <button ng-click="$ctrl.dlgOpenAddPackageItemImage(subItem)" class="btn btn-outline-warning">
+                            <span class="fas fa-fw fa-image"></span>
+                        </button>
+                        <button ng-click="$ctrl.removePackageItem(subItem)" class="btn btn-outline-danger">
+                            <span class="fas fa-fw fa-trash"></span>
+                        </button>
+
+                    </td>
+                    
                 </tr>
-
-
+                
             </tbody>
         </table>
     </div>
 
+
+    <script type="text/ng-template" id="modalAddPackageItem.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Package Item</h3>
+        </div>
+        <div class="modal-body">
+            <div>
+                Package Item Name: <input ng-model="packageItem.name" class="form-control" />
+            </div>
+            <div>
+                Package Item Description: <textarea rows="3" ng-model="packageItem.description" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="modalAddPackageItemImage.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Package Item Image</h3>
+        </div>
+        <div class="modal-body">
+            <div>
+                Select Image File
+            </div>
+            <div>
+                <input id="file" type="file"/>
+                <progress id="fileProgress" style="display: none"></progress>
+                <br />
+                <span id="lblMessage" style="color: Green"></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 </div>

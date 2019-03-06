@@ -50,6 +50,23 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal) {
 
     };
 
+    vm.viewReservation = function () {
+
+        var modalInst = $uibModal.open({
+            animation: true,
+            //appendTo: angular.element(document).find('aside'),
+            templateUrl: 'modalViewReservation.html',
+            controller: 'viewReservationModalController',
+            size: 'lg',
+            resolve: {
+                reservation: function () {
+                    return vm.selectedItem;
+                }
+            }
+        });
+        
+    };
+
     vm.cancelReservation = function() {
 
         $http.post(`api/customer/cancelReservation/${vm.selectedItem.reservationId}`)
@@ -65,6 +82,25 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal) {
         $http.get('api/customer/reservations')
             .then(function (resp) {
                 vm.items = resp.data;
+
+                for (var i = 0; i < vm.items.length; i++) {
+                    var item = vm.items[i];
+
+                    if (item.reservationStatus === 0) {
+                        item.reservationStatusText = 'Pending';
+                    }
+                    if (item.reservationStatus === 1) {
+                        item.reservationStatusText = 'Paid';
+                    }
+
+                    if (item.reservationStatus === 2) {
+                        item.reservationStatusText = 'Complete';
+                    }
+
+                    if (item.reservationStatus === 3) {
+                        item.reservationStatusText = 'Cancelled';
+                    }
+                }
             }, function (err) {
                 alert('error occured');
             });
@@ -74,16 +110,30 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal) {
     getReservations();
 });
 
-app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, toastr, paymentDetail) {
+app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, $filter, toastr, paymentDetail) {
 
     $scope.payment = angular.copy(paymentDetail);
-
+    //$scope.payment.totalPrice = Number.pars $filter('number')($scope.payment.totalPrice, 2);
+    $scope.payment.amountPaid = $scope.payment.totalPrice;
     $scope.ok = function () {
         if ($scope.payment.amountPaid < $scope.payment.totalPrice) {
             toastr.warning('Amount Paid is less that Total price', 'Really?');
             return;
         }
         $uibModalInstance.close($scope.payment);
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
+app.controller('viewReservationModalController', function ($scope, $uibModalInstance, toastr, reservation) {
+
+    $scope.reservation = angular.copy(reservation);
+
+    $scope.ok = function () {        
+        $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
