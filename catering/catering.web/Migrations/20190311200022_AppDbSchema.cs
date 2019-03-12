@@ -72,7 +72,7 @@ namespace catering.web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reservations",
+                name: "Reservation",
                 columns: table => new
                 {
                     ReservationId = table.Column<string>(nullable: false),
@@ -103,15 +103,15 @@ namespace catering.web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reservations", x => x.ReservationId);
+                    table.PrimaryKey("PK_Reservation", x => x.ReservationId);
                     table.ForeignKey(
-                        name: "FK_Reservations_Packages_PackageId",
+                        name: "FK_Reservation_Packages_PackageId",
                         column: x => x.PackageId,
                         principalTable: "Packages",
                         principalColumn: "PackageId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reservations_Users_UserId",
+                        name: "FK_Reservation_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -164,9 +164,9 @@ namespace catering.web.Migrations
                         principalColumn: "PackageId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PackageItems_Reservations_ReservationId",
+                        name: "FK_PackageItems_Reservation_ReservationId",
                         column: x => x.ReservationId,
-                        principalTable: "Reservations",
+                        principalTable: "Reservation",
                         principalColumn: "ReservationId",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -185,9 +185,9 @@ namespace catering.web.Migrations
                 {
                     table.PrimaryKey("PK_ReservationNotes", x => x.ReservationNoteId);
                     table.ForeignKey(
-                        name: "FK_ReservationNotes_Reservations_ReservationId",
+                        name: "FK_ReservationNotes_Reservation_ReservationId",
                         column: x => x.ReservationId,
-                        principalTable: "Reservations",
+                        principalTable: "Reservation",
                         principalColumn: "ReservationId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -196,6 +196,32 @@ namespace catering.web.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShortMessage",
+                columns: table => new
+                {
+                    ShortMessageId = table.Column<string>(nullable: false),
+                    ReservationId = table.Column<string>(nullable: false),
+                    Sender = table.Column<string>(nullable: true),
+                    Receiver = table.Column<string>(nullable: true),
+                    Subject = table.Column<string>(nullable: true),
+                    Body = table.Column<string>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateSent = table.Column<DateTime>(nullable: true),
+                    SentCount = table.Column<int>(nullable: false),
+                    Result = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShortMessage", x => x.ShortMessageId);
+                    table.ForeignKey(
+                        name: "FK_ShortMessage_Reservation_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservation",
+                        principalColumn: "ReservationId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -209,6 +235,16 @@ namespace catering.web.Migrations
                 column: "ReservationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reservation_PackageId",
+                table: "Reservation",
+                column: "PackageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservation_UserId",
+                table: "Reservation",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReservationNotes_ReservationId",
                 table: "ReservationNotes",
                 column: "ReservationId");
@@ -219,14 +255,9 @@ namespace catering.web.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_PackageId",
-                table: "Reservations",
-                column: "PackageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reservations_UserId",
-                table: "Reservations",
-                column: "UserId");
+                name: "IX_ShortMessage_ReservationId",
+                table: "ShortMessage",
+                column: "ReservationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
@@ -251,10 +282,13 @@ namespace catering.web.Migrations
                 name: "ReservationNotes");
 
             migrationBuilder.DropTable(
+                name: "ShortMessage");
+
+            migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Reservations");
+                name: "Reservation");
 
             migrationBuilder.DropTable(
                 name: "Roles");

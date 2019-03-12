@@ -138,7 +138,7 @@ namespace catering.web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservation");
                 });
 
             modelBuilder.Entity("catering.web.Data.ReservationNote", b =>
@@ -172,6 +172,36 @@ namespace catering.web.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("catering.web.Data.ShortMessage", b =>
+                {
+                    b.Property<string>("ShortMessageId");
+
+                    b.Property<string>("Body");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime?>("DateSent");
+
+                    b.Property<string>("Receiver");
+
+                    b.Property<string>("ReservationId")
+                        .IsRequired();
+
+                    b.Property<string>("Result");
+
+                    b.Property<string>("Sender");
+
+                    b.Property<int>("SentCount");
+
+                    b.Property<string>("Subject");
+
+                    b.HasKey("ShortMessageId");
+
+                    b.HasIndex("ReservationId");
+
+                    b.ToTable("ShortMessage");
                 });
 
             modelBuilder.Entity("catering.web.Data.User", b =>
@@ -247,6 +277,14 @@ namespace catering.web.Migrations
                     b.HasOne("catering.web.Data.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("catering.web.Data.ShortMessage", b =>
+                {
+                    b.HasOne("catering.web.Data.Reservation", "Reservation")
+                        .WithMany("ShortMessages")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("catering.web.Data.UserRole", b =>

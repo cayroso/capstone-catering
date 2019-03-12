@@ -34,6 +34,7 @@ namespace catering.web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            //var smsNumber = Configuration.GetValue<string>("MasterSMS");
 
             services.AddDbContext<AppDbContext>(opt =>
             {

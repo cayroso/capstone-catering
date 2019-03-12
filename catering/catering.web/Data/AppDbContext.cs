@@ -26,6 +26,9 @@ namespace catering.web.Data
         public DbSet<Package> Packages { get; set; }
         public DbSet<PackageItem> PackageItems { get; set; }
 
+
+        public DbSet<ShortMessage> ShortMessages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -39,6 +42,24 @@ namespace catering.web.Data
             //    .HasMany(e => e.ReservationMenus)
             //    .WithOne(e => e.Reservation)
             //    .IsRequired();
+
+            modelBuilder.Entity<Reservation>()
+                .HasMany(p => p.ShortMessages)
+                .WithOne(p => p.Reservation)
+                .HasForeignKey(p => p.ReservationId)
+                .IsRequired();
+
+            modelBuilder.Entity<Reservation>().ToTable("Reservation");
+
+
+            modelBuilder.Entity<ShortMessage>()
+                .HasOne(p => p.Reservation)
+                .WithMany(p => p.ShortMessages)
+                .HasForeignKey(p => p.ReservationId)
+                .IsRequired();
+
+
+            modelBuilder.Entity<ShortMessage>().ToTable("ShortMessage");
         }
     }
     public static class AppRoles
@@ -282,6 +303,24 @@ namespace catering.web.Data
             {
                 context.Add(p);
 
+                for (var i = 0; i < 3; i++)
+                {
+                    var sms = new ShortMessage
+                    {
+                        ShortMessageId = $"shortmessge-{i}-{p.ReservationId}",
+                        Subject = $"subject-{i}",
+                        Body = "body",
+                        SentCount = 0,
+                        DateCreated = DateTime.UtcNow,
+                        DateSent = null,
+                        Receiver = $"receiver={i}",
+                        ReservationId = p.ReservationId,
+                        Result = "",
+                        Sender = $"sender={i}"
+                    };
+
+                    context.Add(sms);
+                }
             });
 
             var itemPrice = new ItemPrice
@@ -389,6 +428,7 @@ namespace catering.web.Data
             Notes = new List<ReservationNote>();
             PackageItems = new List<PackageItem>();
             Notes = new List<ReservationNote>();
+            ShortMessages = new List<ShortMessage>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -427,9 +467,11 @@ namespace catering.web.Data
         public decimal AmountPaid { get; set; }
 
         public virtual ICollection<ReservationNote> Notes { get; set; }
+        public virtual ICollection<ShortMessage> ShortMessages { get; set; }
 
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }
+
 
         [NotMapped]
         public decimal PlateExtPrice => PlateCount * PlatePrice;
