@@ -55,7 +55,7 @@ app.controller('packagesController', function ($http, $uibModal, toastr) {
     };
 
     vm.removePackageItem = function (packageItem) {
-        $http.post(`api/administrator/packages/item/${packageItem.packageItemId}/remove`)
+        $http.post(`api/administrator/packages/item/${packageItem.packageImageId}/remove`)
             .then(function (resp) {
                 vm.init();
                 toastr.success('Package Item removed');
@@ -101,7 +101,7 @@ app.controller('ModalAddPackageItemInstanceCtrl', function ($scope, $http, $uibM
 });
 
 app.controller('ModalAddPackageItemImageInstanceCtrl', function ($scope, $http, $uibModalInstance, toastr, packageItem) {
-
+    $scope.isDone = false;
     $scope.packageItem = packageItem;
 
     $scope.ok = function () {
@@ -110,11 +110,11 @@ app.controller('ModalAddPackageItemImageInstanceCtrl', function ($scope, $http, 
 
         fileProgress.style.display = "block";
         var formData = new FormData();
-        formData.append(file, document.getElementById("file").files[0]);
-
+        formData.append('file', document.getElementById("file").files[0]);
+        //debugger
         var post = $http({
             method: "POST",
-            url: `/api/administrator/packages/item/${$scope.packageItem.packageItemId}/image`,
+            url: `api/administrator/packages/item/${$scope.packageItem.packageImageId}/image`,
             data: formData,
             transformRequest: angular.identity,
             headers: { 'Content-Type': undefined },
@@ -130,19 +130,24 @@ app.controller('ModalAddPackageItemImageInstanceCtrl', function ($scope, $http, 
 
         post.then(function (data, status) {
             //debugger;
-            toastr.success('Image has been uploaded. Please refresh the page', 'Image Uploaded');
+            toastr.success('Image has been uploaded.', 'Image Uploaded');
 
             //message.innerHTML = "<b>" + data + "</b> has been uploaded.";
             //fileProgress.style.display = "none";
+            $scope.isDone = true;
+            //$uibModalInstance.close($scope.package);
         }, function (data, status) {
             //debugger;
             toastr.error(data.Message);
         });
 
-        $uibModalInstance.close($scope.package);
+        
     };
 
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
+    };
+    $scope.close = function () {
+        $uibModalInstance.close();
     };
 });

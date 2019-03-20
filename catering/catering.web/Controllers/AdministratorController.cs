@@ -42,7 +42,7 @@ namespace catering.web.Controllers
                 .Reservations
                 .Include(p => p.User)
                 .Include(p => p.Package)
-                .Include(p => p.PackageItems)
+                .Include(p => p.ReservationItems)
                 .Where(p => p.DateStart >= start && p.DateEnd <= end)
                 .ToListAsync();
 
@@ -53,7 +53,7 @@ namespace catering.web.Controllers
                 Upcoming = items.Where(p => p.DateStart.Date > now).ToList(),
 
                 Pending = items.Count(p => p.ReservationStatus == ReservationStatus.Pending),
-                Paid = items.Count(p => p.ReservationStatus == ReservationStatus.Paid),
+                Paid = items.Count(p => p.ReservationStatus == ReservationStatus.PaymentAccepted),
                 Completed = items.Count(p => p.ReservationStatus == ReservationStatus.Complete),
                 Cancelled = items.Count(p => p.ReservationStatus == ReservationStatus.Cancelled)
 
@@ -91,11 +91,58 @@ namespace catering.web.Controllers
                 .Reservations
                 .Include(p => p.User)
                 .Include(p => p.Package)
-                .Include(p => p.PackageItems)
+                .Include(p => p.ReservationItems)
                 .ToListAsync();
 
             return Ok(items);
         }
+
+        [HttpPost("reservations/{id}/accept-payment")]
+        public async Task<IActionResult> AcceptPayment(string id)
+        {
+            var data = await _appDbContext
+                .Reservations
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.ReservationId == id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            data.ReservationStatus = ReservationStatus.PaymentAccepted;
+
+            var body = $"Your payment with reference # {data.ReferenceNumber} was Accepted by the system.";
+            await SendNotification(data.ReservationId, "system", data.User.Mobile, "Reservation Payment Accepted", body);
+
+            await _appDbContext.SaveChangesAsync();
+
+            //  TODO: notify via sms that reservation was completed
+            return Ok();
+        }
+
+        [HttpPost("reservations/{id}/reject-payment")]
+        public async Task<IActionResult> RejectPayment(string id, string reason)
+        {
+            var data = await _appDbContext
+                .Reservations
+                .FirstOrDefaultAsync(p => p.ReservationId == id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            data.ReservationStatus = ReservationStatus.PaymentRejected;
+
+            var body = $"Your payment with reference # {data.ReferenceNumber} was rejected by the system due to {reason}.";
+            await SendNotification(data.ReservationId, "system", data.User.Mobile, "Reservation Payment Rejected", body);
+            await _appDbContext.SaveChangesAsync();
+
+            //  TODO: notify via sms that reservation was completed
+            return Ok();
+        }
+
 
         [HttpPost("reservations/{id}/complete")]
         public async Task<IActionResult> SetToComplete(string id)
@@ -113,12 +160,14 @@ namespace catering.web.Controllers
 
             await _appDbContext.SaveChangesAsync();
 
-            //  TODO: notify via sms that reservation was completed
+            var body = $"Your reservation was set to completed by the system.";
+            await SendNotification(data.ReservationId, "system", data.User.Mobile, "Reservation Completed", body);
+
             return Ok();
         }
 
         [HttpPost("reservations/{id}/cancel")]
-        public async Task<IActionResult> SetToCancel(string id)
+        public async Task<IActionResult> SetToCancel(string id, string reason)
         {
             var data = await _appDbContext
                 .Reservations
@@ -130,7 +179,8 @@ namespace catering.web.Controllers
             }
 
             data.ReservationStatus = ReservationStatus.Cancelled;
-
+            var body = $"Your reservation was cancelled by the system due to {reason}.";
+            await SendNotification(data.ReservationId, "system", data.User.Mobile, "Reservation Cancelled", body);
             await _appDbContext.SaveChangesAsync();
 
             //  TODO: notify via sms that reservation was cancelled
@@ -146,13 +196,14 @@ namespace catering.web.Controllers
             var items = await _appDbContext
                 .Packages
                 .Include(p => p.Items)
+                .Include(p => p.Images)
                 .ToListAsync();
 
             return Ok(items);
         }
 
         [HttpPost("packages/item")]
-        public async Task<IActionResult> AddPackageItem([FromBody]AddPackageItemInfo info)
+        public async Task<IActionResult> AddPackageItem([FromBody]AddPackageImageInfo info)
         {
             var package = await _appDbContext
                 .Packages
@@ -163,39 +214,39 @@ namespace catering.web.Controllers
                 return NotFound();
             }
 
-            var packageItemId = Guid.NewGuid().ToString();
+            var packageImageId = Guid.NewGuid().ToString();
 
-            var packageItem = new PackageItem
+            var image = new PackageImage
             {
-                PackageItemId = packageItemId,
+                PackageImageId = packageImageId,
                 PackageId = info.PackageId,
                 Name = info.Name,
                 Description = info.Description,
                 ImageUrl = ""
             };
 
-            await _appDbContext.AddAsync(packageItem);
+            await _appDbContext.AddAsync(image);
 
             await _appDbContext.SaveChangesAsync();
 
-            return Created(packageItem.PackageItemId, packageItem);
+            return Created(image.PackageImageId, image);
         }
 
         [HttpPost("packages/item/{id}/image")]
         public async Task<IActionResult> UploadImage(string id)
         {
-            var packageItem = await _appDbContext
-                .PackageItems
-                .FirstOrDefaultAsync(p => p.PackageItemId == id);
+            var image = await _appDbContext
+                .PackageImages
+                .FirstOrDefaultAsync(p => p.PackageImageId == id);
 
-            if (packageItem == null)
+            if (image == null)
             {
                 return NotFound();
             }
             var path = _hostingEnvironment.WebRootPath + "/images";
 
             //  delete existing
-            var oldFileName = Path.Combine(_hostingEnvironment.WebRootPath, packageItem.ImageUrl);
+            var oldFileName = Path.Combine(_hostingEnvironment.WebRootPath, image.ImageUrl);
 
             if (System.IO.File.Exists(oldFileName))
             {
@@ -204,7 +255,7 @@ namespace catering.web.Controllers
 
             var file = HttpContext.Request.Form.Files[0];
             var stream = file.OpenReadStream();
-            var name = $"{packageItem.PackageItemId}-{file.FileName}";
+            var name = $"{image.PackageImageId}-{file.FileName}";
 
 
 
@@ -221,7 +272,9 @@ namespace catering.web.Controllers
                 await file.CopyToAsync(fs);
             }
 
-            packageItem.ImageUrl = $"images/{name}";
+            image.ImageUrl = $"images/{name}";
+
+            _appDbContext.Update(image);
 
             await _appDbContext.SaveChangesAsync();
 
@@ -231,24 +284,24 @@ namespace catering.web.Controllers
         [HttpPost("packages/item/{id}/remove")]
         public async Task<IActionResult> DeletePackageItem(string id)
         {
-            var item = await _appDbContext
-                .PackageItems
-                .FirstOrDefaultAsync(p => p.PackageItemId == id);
+            var image = await _appDbContext
+                .PackageImages
+                .FirstOrDefaultAsync(p => p.PackageImageId == id);
 
-            if(item == null)
+            if (image == null)
             {
                 return NotFound();
             }
 
             //  delete existing image
-            var oldFileName = Path.Combine(_hostingEnvironment.WebRootPath, item.ImageUrl);
+            var oldFileName = Path.Combine(_hostingEnvironment.WebRootPath, image.ImageUrl);
 
             if (System.IO.File.Exists(oldFileName))
             {
                 System.IO.File.Delete(oldFileName);
             }
 
-            _appDbContext.Remove(item);
+            _appDbContext.Remove(image);
 
             await _appDbContext.SaveChangesAsync();
 
@@ -262,6 +315,21 @@ namespace catering.web.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             return userId;
+        }
+
+        async Task SendNotification(string reservationid, string sender, string receiver, string subject, string body)
+        {
+            var sms = new ShortMessage
+            {
+                ShortMessageId = Guid.NewGuid().ToString(),
+                ReservationId = reservationid,
+                Sender = sender,
+                Receiver = receiver,
+                Subject = subject,
+                Body = body,
+            };
+
+            await _appDbContext.AddAsync(sms);
         }
     }
 
@@ -278,7 +346,7 @@ namespace catering.web.Controllers
         public int Cancelled { get; set; }
     }
 
-    public class AddPackageItemInfo
+    public class AddPackageImageInfo
     {
         public string PackageId { get; set; }
         public string Name { get; set; }

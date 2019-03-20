@@ -3,10 +3,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace catering.web.Migrations
 {
-    public partial class AppDbSchema : Migration
+    public partial class appdbschema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "BusinessInfos",
+                columns: table => new
+                {
+                    BusinessInfoId = table.Column<string>(nullable: false),
+                    About = table.Column<string>(nullable: true),
+                    History = table.Column<string>(nullable: true),
+                    Location = table.Column<string>(nullable: true),
+                    ContactNumber = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Facebook = table.Column<string>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusinessInfos", x => x.BusinessInfoId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "ItemPrices",
                 columns: table => new
@@ -59,9 +77,7 @@ namespace catering.web.Migrations
                     UserId = table.Column<string>(nullable: false),
                     UserName = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
-                    MiddleName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
+                    FullName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Phone = table.Column<string>(nullable: true),
                     Mobile = table.Column<string>(nullable: true)
@@ -69,6 +85,50 @@ namespace catering.web.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PackageImages",
+                columns: table => new
+                {
+                    PackageImageId = table.Column<string>(nullable: false),
+                    PackageId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    Price = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PackageImages", x => x.PackageImageId);
+                    table.ForeignKey(
+                        name: "FK_PackageImages_Packages_PackageId",
+                        column: x => x.PackageId,
+                        principalTable: "Packages",
+                        principalColumn: "PackageId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PackageItems",
+                columns: table => new
+                {
+                    PackageItemId = table.Column<string>(nullable: false),
+                    PackageId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Category = table.Column<string>(nullable: true),
+                    Type = table.Column<string>(nullable: true),
+                    Price = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PackageItems", x => x.PackageItemId);
+                    table.ForeignKey(
+                        name: "FK_PackageItems_Packages_PackageId",
+                        column: x => x.PackageId,
+                        principalTable: "Packages",
+                        principalColumn: "PackageId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,31 +204,24 @@ namespace catering.web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PackageItems",
+                name: "ReservationItem",
                 columns: table => new
                 {
-                    PackageItemId = table.Column<string>(nullable: false),
-                    PackageId = table.Column<string>(nullable: true),
+                    ReservationItemId = table.Column<string>(nullable: false),
+                    ReservationId = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    ImageUrl = table.Column<string>(nullable: true),
-                    ReservationId = table.Column<string>(nullable: true)
+                    ImageUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PackageItems", x => x.PackageItemId);
+                    table.PrimaryKey("PK_ReservationItem", x => x.ReservationItemId);
                     table.ForeignKey(
-                        name: "FK_PackageItems_Packages_PackageId",
-                        column: x => x.PackageId,
-                        principalTable: "Packages",
-                        principalColumn: "PackageId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PackageItems_Reservation_ReservationId",
+                        name: "FK_ReservationItem_Reservation_ReservationId",
                         column: x => x.ReservationId,
                         principalTable: "Reservation",
                         principalColumn: "ReservationId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -176,7 +229,7 @@ namespace catering.web.Migrations
                 columns: table => new
                 {
                     ReservationNoteId = table.Column<string>(nullable: false),
-                    ReservationId = table.Column<string>(nullable: true),
+                    ReservationId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
                     Content = table.Column<string>(nullable: true),
                     DateCreated = table.Column<DateTime>(nullable: false)
@@ -189,7 +242,7 @@ namespace catering.web.Migrations
                         column: x => x.ReservationId,
                         principalTable: "Reservation",
                         principalColumn: "ReservationId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ReservationNotes_Users_UserId",
                         column: x => x.UserId,
@@ -225,14 +278,14 @@ namespace catering.web.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PackageItems_PackageId",
-                table: "PackageItems",
+                name: "IX_PackageImages_PackageId",
+                table: "PackageImages",
                 column: "PackageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PackageItems_ReservationId",
+                name: "IX_PackageItems_PackageId",
                 table: "PackageItems",
-                column: "ReservationId");
+                column: "PackageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservation_PackageId",
@@ -243,6 +296,11 @@ namespace catering.web.Migrations
                 name: "IX_Reservation_UserId",
                 table: "Reservation",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReservationItem_ReservationId",
+                table: "ReservationItem",
+                column: "ReservationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReservationNotes_ReservationId",
@@ -273,10 +331,19 @@ namespace catering.web.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BusinessInfos");
+
+            migrationBuilder.DropTable(
                 name: "ItemPrices");
 
             migrationBuilder.DropTable(
+                name: "PackageImages");
+
+            migrationBuilder.DropTable(
                 name: "PackageItems");
+
+            migrationBuilder.DropTable(
+                name: "ReservationItem");
 
             migrationBuilder.DropTable(
                 name: "ReservationNotes");

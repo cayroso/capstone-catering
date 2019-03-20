@@ -5,17 +5,66 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\images\IMG_1.JPG" />
+    <Content Remove="wwwroot\images\IMG_10.JPG" />
+    <Content Remove="wwwroot\images\IMG_11.JPG" />
+    <Content Remove="wwwroot\images\IMG_12.JPG" />
+    <Content Remove="wwwroot\images\IMG_13.JPG" />
+    <Content Remove="wwwroot\images\IMG_14.JPG" />
+    <Content Remove="wwwroot\images\IMG_15.JPG" />
+    <Content Remove="wwwroot\images\IMG_16.JPG" />
+    <Content Remove="wwwroot\images\IMG_17.JPG" />
+    <Content Remove="wwwroot\images\IMG_18.JPG" />
+    <Content Remove="wwwroot\images\IMG_19.JPG" />
+    <Content Remove="wwwroot\images\IMG_2.JPG" />
+    <Content Remove="wwwroot\images\IMG_20.JPG" />
+    <Content Remove="wwwroot\images\IMG_3.JPG" />
+    <Content Remove="wwwroot\images\IMG_4.JPG" />
+    <Content Remove="wwwroot\images\IMG_5.JPG" />
+    <Content Remove="wwwroot\images\IMG_6.JPG" />
+    <Content Remove="wwwroot\images\IMG_7.JPG" />
+    <Content Remove="wwwroot\images\IMG_8.JPG" />
+    <Content Remove="wwwroot\images\IMG_9.JPG" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="Stripe.net" Version="24.5.0" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <Folder Include="wwwroot\images\" />
+    <Folder Include="HostedServices\" />
+    <Folder Include="SampleImages\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="wwwroot\images\IMG_1.JPG" />
+    <None Include="wwwroot\images\IMG_10.JPG" />
+    <None Include="wwwroot\images\IMG_11.JPG" />
+    <None Include="wwwroot\images\IMG_12.JPG" />
+    <None Include="wwwroot\images\IMG_13.JPG" />
+    <None Include="wwwroot\images\IMG_14.JPG" />
+    <None Include="wwwroot\images\IMG_15.JPG" />
+    <None Include="wwwroot\images\IMG_16.JPG" />
+    <None Include="wwwroot\images\IMG_17.JPG" />
+    <None Include="wwwroot\images\IMG_18.JPG" />
+    <None Include="wwwroot\images\IMG_19.JPG" />
+    <None Include="wwwroot\images\IMG_2.JPG" />
+    <None Include="wwwroot\images\IMG_20.JPG" />
+    <None Include="wwwroot\images\IMG_3.JPG" />
+    <None Include="wwwroot\images\IMG_4.JPG" />
+    <None Include="wwwroot\images\IMG_5.JPG" />
+    <None Include="wwwroot\images\IMG_6.JPG" />
+    <None Include="wwwroot\images\IMG_7.JPG" />
+    <None Include="wwwroot\images\IMG_8.JPG" />
+    <None Include="wwwroot\images\IMG_9.JPG" />
   </ItemGroup>
 
 </Project>

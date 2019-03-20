@@ -38,6 +38,8 @@ namespace catering.web.Pages.Account
         [TempData]
         public string ErrorMessage { get; set; }
 
+        [BindProperty]
+        public List<User> Users { get; set; }
 
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -48,6 +50,12 @@ namespace catering.web.Pages.Account
             }
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var items = await _appDbContext
+                .Users
+                .ToListAsync();
+
+            Users = items;
 
             ReturnUrl = returnUrl;
         }
@@ -86,10 +94,19 @@ namespace catering.web.Pages.Account
                     });
                 }
 
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(claimsIdentity);
+                var authProperties = new AuthenticationProperties
+                {
 
-                await HttpContext.SignInAsync(principal);
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                //await HttpContext.SignInAsync(principal);
 
 
                 #endregion

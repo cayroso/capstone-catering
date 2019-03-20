@@ -34,6 +34,7 @@ namespace catering.web.Pages.Reservations
         {
             var packages = await _appDbContext
                 .Packages
+                .Include(p => p.Images)
                 .ToListAsync();
 
             var result = new JsonResult(packages);
@@ -51,7 +52,7 @@ namespace catering.web.Pages.Reservations
 
             return result;
         }
-        
+
         public async Task<JsonResult> OnGetReservationsAsync()
         {
             var items = await _appDbContext
@@ -87,6 +88,13 @@ namespace catering.web.Pages.Reservations
                 return BadRequest(new { message = "Date Start cannot exceed Date End." });
             }
 
+            var now = DateTimeOffset.UtcNow;
+
+            if (info.DateStart <= now || info.DateEnd <= now)
+            {
+                return BadRequest(new { message = "Cannot reserve today or to past dates" });
+            }
+
             if (info.DateStart == info.DateEnd)
             {
                 info.DateEnd = info.DateEnd.AddMinutes(59);
@@ -96,16 +104,19 @@ namespace catering.web.Pages.Reservations
                 info.DateEnd = info.DateEnd.AddSeconds(-1);
             }
 
+            var startUtc = info.DateStart.UtcDateTime;
+            var endUtc = info.DateEnd.UtcDateTime;
+
             var conflicts = _appDbContext.Reservations
                             .Where(p =>
                                 p.ReservationStatus != ReservationStatus.Cancelled
                                 &&
-                                ((info.DateStart > p.DateStart && info.DateStart < p.DateEnd) ||
-                                (info.DateEnd > p.DateStart && info.DateEnd < p.DateEnd))
+                                ((startUtc >= p.DateStart && startUtc <= p.DateEnd) ||
+                                (endUtc >= p.DateStart && endUtc <= p.DateEnd))
                                 )
                             .ToList();
 
-            if (conflicts.Any())
+            if (conflicts.Count > 3)
             {
                 var message = "Please Select another start or end date. Your reservation will conflict with existing ones.";
 
@@ -144,8 +155,8 @@ namespace catering.web.Pages.Reservations
                 AmountPaid = 0,
                 ReferenceNumber = string.Empty,
 
-                DateStart = info.DateStart,
-                DateEnd = info.DateEnd,
+                DateStart = startUtc,
+                DateEnd = endUtc,
                 ReservationStatus = ReservationStatus.Pending
             };
 
@@ -153,17 +164,64 @@ namespace catering.web.Pages.Reservations
 
             _appDbContext.Add(new ReservationNote
             {
-                Content = "Reservation started",
-                UserId = user.UserId,
-                ReservationId = reservationId
+                ReservationNoteId = Guid.NewGuid().ToString(),
+                ReservationId = reservation.ReservationId,
+                Content = info.Notes,
+                DateCreated = DateTime.UtcNow,
+                UserId = user.UserId
             });
+
+            info.PackageImageIds.ForEach(async p =>
+            {
+                var packageImage = await _appDbContext
+                    .PackageImages
+                    .FirstOrDefaultAsync(q => q.PackageImageId == p);
+
+                if (packageImage != null)
+                {
+                    var reservationItem = new ReservationItem
+                    {
+                        ReservationItemId = Guid.NewGuid().ToString(),
+                        ReservationId = reservation.ReservationId,
+                        ImageUrl = packageImage.ImageUrl,
+                        Name = packageImage.Name,
+                        Description = packageImage.Description
+                    };
+
+                    await _appDbContext.AddAsync(reservationItem);
+                }
+            });
+
+            var admin = await _appDbContext.Users.FirstAsync(p => p.UserId == "administrator");
+
+            //  notification for the administrator
+            var body1 = $"A new reservation was booked by customer {user.FullName}";
+            await SendNotification(reservation.ReservationId, "system", admin.Mobile, "New Reservation Request", body1);
+
+            var body2 = $"Your reservation request was accepted by the system. If you have not yet set the payment options for this reservation, please proceed with the payment so that the system can complete your reservation.";
+            await SendNotification(reservation.ReservationId, "system", user.Mobile, "Your Reservation Request Accepted", body2);
+
 
             await _appDbContext.SaveChangesAsync();
 
+
             return new OkResult();
         }
-        
 
+        async Task SendNotification(string reservationid, string sender, string receiver, string subject, string body)
+        {
+            var sms = new ShortMessage
+            {
+                ShortMessageId = Guid.NewGuid().ToString(),
+                ReservationId = reservationid,
+                Sender = sender,
+                Receiver = receiver,
+                Subject = subject,
+                Body = body,
+            };
+
+            await _appDbContext.AddAsync(sms);
+        }
     }
 
 
@@ -192,8 +250,12 @@ namespace catering.web.Pages.Reservations
         public decimal SoundSystemPrice { get; set; }
         public decimal FlowerPrice { get; set; }
 
-        public DateTime DateStart { get; set; }
-        public DateTime DateEnd { get; set; }
+        public DateTimeOffset DateStart { get; set; }
+        public DateTimeOffset DateEnd { get; set; }
+
+        public List<string> PackageImageIds { get; set; }
+
+        public string Notes { get; set; }
     }
 
 

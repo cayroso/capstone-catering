@@ -23,7 +23,41 @@ namespace catering.web.Controllers
             _appDbContext = appDbContext;
         }
 
-        
+        [HttpGet("availability/{start}/{end}")]
+        //public async Task<IActionResult> CheckAvailability(long startTicks, long endTicks)
+        public async Task<IActionResult> CheckAvailability(DateTimeOffset start, DateTimeOffset end)
+        {
+            //var start = new DateTime(startTicks);
+            //var end = new DateTime(endTicks);
+
+            if (start > end)
+            {
+                return BadRequest("Please check your dates");
+            }
+
+            var s = DateTimeOffset.UtcNow.Date;
+            var e = s.AddDays(1).AddSeconds(-1);
+
+            if (start >= s && start <= e || (end >= s && end <= e))
+            {
+                return BadRequest("Cannot Reserve today");
+            }
+
+            var startUtc = start.UtcDateTime;
+            var endUtc = end.UtcDateTime;
+
+            var found = await _appDbContext
+                .Reservations
+                .FirstOrDefaultAsync(p => (startUtc >= p.DateStart && startUtc <= p.DateEnd) || (endUtc >= p.DateStart && endUtc <= p.DateEnd));
+
+            if (found != null)
+            {
+                return BadRequest("Dates are already reserved");
+            }
+
+            return Ok();
+        }
+
         [HttpPost("addNote/{id}")]
         public async Task<IActionResult> AddNote(string id, string note)
         {
@@ -79,7 +113,7 @@ namespace catering.web.Controllers
 
             return Ok();
         }
-        
+
 
         string GetUserId()
         {

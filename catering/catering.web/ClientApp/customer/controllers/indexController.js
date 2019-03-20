@@ -28,12 +28,12 @@ app.controller('indexController', function ($http) {
                         title: item.package.name,
                         start: $.fullCalendar.moment(item.dateStart),
                         end: $.fullCalendar.moment(item.dateEnd),
-                    })
+                    });
                 }
 
                 $('#calendar').fullCalendar({
                     header: { center: 'month,agendaWeek' },
-                    defaultView: 'agendaWeek',
+                    defaultView: 'month',
                     minTime: '07:00:00',
                     maxTime: '22:59:00',
                     events: events

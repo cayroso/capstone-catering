@@ -7,7 +7,7 @@ const app = angular.module('app', [require('angular-animate'), require('angular-
 app.controller('mainController', function () {
     const vm = this;
     const pagePrefix = 'app/clientapp/administrator/templates/';
-    vm.page = `${pagePrefix}/reservations.html`;
+    vm.page = `${pagePrefix}/dashboard.html`;
 
     vm.setPage = function (page, event) {
         //debugger;

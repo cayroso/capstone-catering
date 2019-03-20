@@ -48,14 +48,18 @@ app.controller('reservationsController', function ($http, toastr) {
                         item.reservationStatusText = 'Pending';
                     }
                     if (item.reservationStatus === 1) {
-                        item.reservationStatusText = 'Paid';
+                        item.reservationStatusText = 'Payment Sent';
                     }
-
                     if (item.reservationStatus === 2) {
+                        item.reservationStatusText = 'Payment Accepted';
+                    }
+                    if (item.reservationStatus === 3) {
+                        item.reservationStatusText = 'Payment Rejected';
+                    }
+                    if (item.reservationStatus === 4) {
                         item.reservationStatusText = 'Complete';
                     }
-
-                    if (item.reservationStatus === 3) {
+                    if (item.reservationStatus === 5) {
                         item.reservationStatusText = 'Cancelled';
                     }
                 }

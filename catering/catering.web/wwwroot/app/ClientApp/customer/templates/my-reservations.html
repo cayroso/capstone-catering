@@ -45,19 +45,36 @@
                     <td>{{item.referenceNumber}}</td>
 
                     <td ng-if="$ctrl.selectedItem">
-                        <div ng-if="$ctrl.selectedItem === item" class="btn-group btn-group-sm">
+                        <span ng-if="$ctrl.selectedItem === item" class="btn-group btn-group-sm">
 
                             <button ng-click="$ctrl.viewReservation()" class="btn btn-outline-info">
                                 <span class="fas fa-eye"></span>&nbsp;View
                             </button>
                             <button ng-click="$ctrl.setPayment()" ng-if="item.reservationStatus === 0" class="btn btn-sm btn-outline-info">
-                                <span class="fas fa-fw fa-money-bill"></span>&nbsp;Payment
+                                <span class="fas fa-fw fa-money-bill"></span>&nbsp;Smart Padala Payment
                             </button>
-                            <button ng-click="$ctrl.cancelReservation()" ng-if="item.reservationStatus === 0 || item.reservationStatus === 1" class="btn btn-sm btn-outline-danger">
-                                <span class="fas fa-trash"></span>&nbsp;Cancel
-                            </button>
+                            
+                        </span>
 
-                        </div>
+                        <form ng-if="$ctrl.selectedItem === item && item.reservationStatus === 0"
+                              action="api/customer/reservations/pay-with-stripe" method="POST" style="display:inline">
+
+                            <input type="hidden" name="reservationId" ng-value="item.reservationId" />
+                            <input type="hidden" name="amount" ng-value="item.totalPrice" />
+
+                            <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                    data-key="pk_test_ZNR4gXFajYWPzmYpVrRUJKF3"
+                                    data-amount="{{item.totalPrice*100}}"
+                                    data-name="EC Catering Service"
+                                    data-description="Reservation Charge"
+                                    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                                    data-locale="auto">
+                            </script>
+                        </form>
+
+                        <button ng-click="$ctrl.cancelReservation()" ng-if="item.reservationStatus === 0 || item.reservationStatus === 1" class="btn btn-sm btn-outline-danger">
+                            <span class="fas fa-trash"></span>&nbsp;Cancel
+                        </button>
                     </td>
                     <!--<td>{{item.guestCount | number:'2'}}</td>
                     <td>{{item.plateCount | number:'2'}}</td>
@@ -122,10 +139,28 @@
                         <span type="text" class="form-control-plaintext">{{reservation.totalPrice | number:'2'}}</span>
                     </div>
                 </div>
+                <!--<div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Status</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.reservationStatus}}</span>
+                    </div>
+                </div>-->
                 <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Guest Count</label>
                     <div class="col-sm-9">
                         <span type="text" class="form-control-plaintext">{{reservation.guestCount | number:'0'}}</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Prefered Layouts</label>
+                    <div class="col-sm-9">
+                        <img ng-src="{{img.imageUrl}}" ng-repeat="img in reservation.reservationItems" class="img-thumbnail" style="width:128px;height:128px;" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Notes and Comments</label>
+                    <div class="col-sm-9">
+                        <p ng-repeat="note in reservation.notes">{{note.dateCreated |date:'short'}}: {{note.content}}</p>
                     </div>
                 </div>
             </div>
@@ -135,9 +170,12 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <!--<button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>-->
         </div>
     </script>
+
+    
+    
 </div>
 
 

@@ -5,11 +5,8 @@
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>First Name</th>
-                    <th>Middle Name</th>
-                    <th>Last Name</th>
+                    <th>Name</th>
                     <th>Email</th>
-
                     <th>Phone</th>
                     <th>Mobile</th>
                     <th># of Reservations</th>
@@ -17,9 +14,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)">
-                    <td>{{item.firstName}}</td>
-                    <td>{{item.middleName}}</td>
-                    <td>{{item.lastName}}</td>
+                    <td>{{item.fullName}}</td>
                     <td>{{item.email}}</td>
                     <td>{{item.phone}}</td>
                     <td>{{item.mobile}}</td>

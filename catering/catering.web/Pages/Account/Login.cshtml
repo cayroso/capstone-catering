@@ -44,22 +44,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            administrator
-                        </td>
-                        <td>
-                            1234
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            user1
-                        </td>
-                        <td>
-                            1234
-                        </td>
-                    </tr>
+                    @foreach (var usr in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                @usr.UserName
+                            </td>
+                            <td>
+                                @usr.Password
+                            </td>
+                        </tr>
+                    }
+                    
                 </tbody>
             </table>
         </div>

@@ -9,14 +9,38 @@ using catering.web.Data;
 namespace catering.web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190311200022_AppDbSchema")]
-    partial class AppDbSchema
+    [Migration("20190320150550_appdbschema")]
+    partial class appdbschema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
+
+            modelBuilder.Entity("catering.web.Data.BusinessInfo", b =>
+                {
+                    b.Property<string>("BusinessInfoId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("About");
+
+                    b.Property<string>("ContactNumber");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("Facebook");
+
+                    b.Property<string>("History");
+
+                    b.Property<string>("Location");
+
+                    b.HasKey("BusinessInfoId");
+
+                    b.ToTable("BusinessInfos");
+                });
 
             modelBuilder.Entity("catering.web.Data.ItemPrice", b =>
                 {
@@ -59,9 +83,9 @@ namespace catering.web.Migrations
                     b.ToTable("Packages");
                 });
 
-            modelBuilder.Entity("catering.web.Data.PackageItem", b =>
+            modelBuilder.Entity("catering.web.Data.PackageImage", b =>
                 {
-                    b.Property<string>("PackageItemId");
+                    b.Property<string>("PackageImageId");
 
                     b.Property<string>("Description");
 
@@ -71,13 +95,32 @@ namespace catering.web.Migrations
 
                     b.Property<string>("PackageId");
 
-                    b.Property<string>("ReservationId");
+                    b.Property<double>("Price");
+
+                    b.HasKey("PackageImageId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("PackageImages");
+                });
+
+            modelBuilder.Entity("catering.web.Data.PackageItem", b =>
+                {
+                    b.Property<string>("PackageItemId");
+
+                    b.Property<string>("Category");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("PackageId");
+
+                    b.Property<double>("Price");
+
+                    b.Property<string>("Type");
 
                     b.HasKey("PackageItemId");
 
                     b.HasIndex("PackageId");
-
-                    b.HasIndex("ReservationId");
 
                     b.ToTable("PackageItems");
                 });
@@ -143,6 +186,27 @@ namespace catering.web.Migrations
                     b.ToTable("Reservation");
                 });
 
+            modelBuilder.Entity("catering.web.Data.ReservationItem", b =>
+                {
+                    b.Property<string>("ReservationItemId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("ImageUrl");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("ReservationId")
+                        .IsRequired();
+
+                    b.HasKey("ReservationItemId");
+
+                    b.HasIndex("ReservationId");
+
+                    b.ToTable("ReservationItem");
+                });
+
             modelBuilder.Entity("catering.web.Data.ReservationNote", b =>
                 {
                     b.Property<string>("ReservationNoteId")
@@ -152,7 +216,8 @@ namespace catering.web.Migrations
 
                     b.Property<DateTime>("DateCreated");
 
-                    b.Property<string>("ReservationId");
+                    b.Property<string>("ReservationId")
+                        .IsRequired();
 
                     b.Property<string>("UserId");
 
@@ -212,11 +277,7 @@ namespace catering.web.Migrations
 
                     b.Property<string>("Email");
 
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
-
-                    b.Property<string>("MiddleName");
+                    b.Property<string>("FullName");
 
                     b.Property<string>("Mobile");
 
@@ -248,15 +309,18 @@ namespace catering.web.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("catering.web.Data.PackageImage", b =>
+                {
+                    b.HasOne("catering.web.Data.Package", "Package")
+                        .WithMany("Images")
+                        .HasForeignKey("PackageId");
+                });
+
             modelBuilder.Entity("catering.web.Data.PackageItem", b =>
                 {
                     b.HasOne("catering.web.Data.Package", "Package")
                         .WithMany("Items")
                         .HasForeignKey("PackageId");
-
-                    b.HasOne("catering.web.Data.Reservation")
-                        .WithMany("PackageItems")
-                        .HasForeignKey("ReservationId");
                 });
 
             modelBuilder.Entity("catering.web.Data.Reservation", b =>
@@ -270,11 +334,20 @@ namespace catering.web.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("catering.web.Data.ReservationItem", b =>
+                {
+                    b.HasOne("catering.web.Data.Reservation", "Reservation")
+                        .WithMany("ReservationItems")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("catering.web.Data.ReservationNote", b =>
                 {
-                    b.HasOne("catering.web.Data.Reservation")
+                    b.HasOne("catering.web.Data.Reservation", "Reservation")
                         .WithMany("Notes")
-                        .HasForeignKey("ReservationId");
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("catering.web.Data.User", "User")
                         .WithMany()

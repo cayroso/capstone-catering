@@ -1,0 +1,85 @@
+﻿@page
+@model catering.web.Pages.Gallery.IndexModel
+@{
+}
+<ul class="nav nav-tabs nav-fill" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="wedding-tab" data-toggle="tab" href="#wedding" role="tab" aria-controls="wedding" aria-selected="true">
+            <span class="fas fa-fw fa-church"></span>&nbsp;Wedding
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="debut-tab" data-toggle="tab" href="#debut" role="tab" aria-controls="debut" aria-selected="false">
+            <span class="fas fa-fw fa-cocktail"></span>&nbsp;Debut
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="childparty-tab" data-toggle="tab" href="#childparty" role="tab" aria-controls="childparty" aria-selected="false">
+            <span class="fas fa-fw fa-birthday-cake"></span>&nbsp;Children Party
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="corpevent-tab" data-toggle="tab" href="#corpevent" role="tab" aria-controls="corpevent" aria-selected="false">
+            <span class="fas fa-fw fa-building"></span>&nbsp;Corporate Event
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="wedding" role="tabpanel" aria-labelledby="wedding-tab">
+        <br />
+        <div class="card-columns">
+            @foreach (var item in Model.Packages.FirstOrDefault(p => p.PackageId == "wedding").Images)
+            {
+                <div class="card border-primary">
+                    <div class="card-header bg-success text-white">
+                        @item.Name
+                    </div>
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                </div>
+            }
+        </div>
+    </div>
+    <div class="tab-pane fade" id="debut" role="tabpanel" aria-labelledby="debut-tab">
+        <br />
+        <div class="card-columns">
+            @foreach (var item in Model.Packages.FirstOrDefault(p => p.PackageId == "debut").Images)
+            {
+                <div class="card border-primary">
+                    <div class="card-header bg-success text-white">
+                        @item.Name
+                    </div>
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                </div>
+            }
+        </div>
+    </div>
+    <div class="tab-pane fade" id="childparty" role="tabpanel" aria-labelledby="childparty-tab">
+        <br />
+        <div class="card-columns">
+            @foreach (var item in Model.Packages.FirstOrDefault(p => p.PackageId == "children-party").Images)
+            {
+                <div class="card border-primary">
+                    <div class="card-header bg-success text-white">
+                        @item.Name
+                    </div>
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                </div>
+            }
+        </div>
+    </div>
+    <div class="tab-pane fade" id="corpevent" role="tabpanel" aria-labelledby="corpevent-tab">
+        <br />
+        <div class="card-columns">
+            @foreach (var item in Model.Packages.FirstOrDefault(p => p.PackageId == "corporate-event").Images)
+            {
+                <div class="card border-primary">
+                    <div class="card-header bg-success text-white">
+                        @item.Name
+                    </div>
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                </div>
+            }
+        </div>
+    </div>
+</div>

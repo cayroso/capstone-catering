@@ -18,9 +18,12 @@ namespace catering.web.Pages.Home
             _appDbContext = appDbContext;
         }
 
-        public void OnGet()
-        {
+        [BindProperty]
+        public List<PackageImage> Images { get; set; }
 
+        public async Task OnGet()
+        {
+            Images = await _appDbContext.PackageImages.ToListAsync();
         }
 
         public async Task<JsonResult> OnGetReservationsAsync()
