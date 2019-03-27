@@ -1,0 +1,10 @@
+<resources> 
+  <string name="stop_timestamp_service_button_text">Stop Service</string>
+  <string name="restart_timestamp_service_button_text"> Start Service</string>
+  <string name="app_name">EC Catering Service Android SMS Sender</string>
+  <string name="service_started">The service is started.</string>
+  <string name="app_description">This Android App is used by EC Catering Service to send SMS notification.</string>
+  <string name="notification_text">The Service is up and running.</string>
+  <string name="restart_timer">Restart Timer</string>
+  <string name="stop_service">Stop Service</string>
+</resources>

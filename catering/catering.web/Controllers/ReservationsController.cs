@@ -23,12 +23,12 @@ namespace catering.web.Controllers
             _appDbContext = appDbContext;
         }
 
-        [HttpGet("availability/{start}/{end}")]
+        [HttpGet("availability")]
         //public async Task<IActionResult> CheckAvailability(long startTicks, long endTicks)
-        public async Task<IActionResult> CheckAvailability(DateTimeOffset start, DateTimeOffset end)
+        public async Task<IActionResult> CheckAvailability(long startTicks, long endTicks)
         {
-            //var start = new DateTime(startTicks);
-            //var end = new DateTime(endTicks);
+            var start = DateTimeOffset.FromUnixTimeMilliseconds(startTicks);
+            var end = DateTimeOffset.FromUnixTimeMilliseconds(endTicks);
 
             if (start > end)
             {
@@ -48,9 +48,10 @@ namespace catering.web.Controllers
 
             var found = await _appDbContext
                 .Reservations
-                .FirstOrDefaultAsync(p => (startUtc >= p.DateStart && startUtc <= p.DateEnd) || (endUtc >= p.DateStart && endUtc <= p.DateEnd));
+                .Where(p => (startUtc >= p.DateStart && startUtc <= p.DateEnd) || (endUtc >= p.DateStart && endUtc <= p.DateEnd))
+                .ToListAsync();
 
-            if (found != null)
+            if (found.Count >= 3)
             {
                 return BadRequest("Dates are already reserved");
             }
@@ -108,6 +109,28 @@ namespace catering.web.Controllers
             }
 
             reservation.ReservationStatus = ReservationStatus.Complete;
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpGet("pricing")]
+        public async Task<IActionResult> GetItemPrice()
+        {
+            var data = await _appDbContext
+                .ItemPrices                
+                .FirstAsync();
+
+            return Ok(data);
+        }
+
+        [HttpPost("pricing")]
+        public async Task<IActionResult> UpdateItemPricing([FromBody]ItemPrice info)
+        {
+            _appDbContext.Attach(info);
+
+            _appDbContext.Update(info);
 
             await _appDbContext.SaveChangesAsync();
 

@@ -33,6 +33,88 @@ namespace catering.web.Data
         public string Result { get; set; }
     }
 
+
+    public class ItemPrice
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string ItemPriceId { get; set; }
+
+        public decimal Plate { get; set; }
+        public decimal Spoon { get; set; }
+        public decimal Fork { get; set; }
+        public decimal Glass { get; set; }
+        public decimal Chair { get; set; }
+        public decimal Table { get; set; }
+        public decimal Flower { get; set; }
+        public decimal SoundSystem { get; set; }
+        public decimal FixedCost { get; set; }
+        public decimal FixedLabor { get; set; }
+        public DateTime DateCreated { get; set; }
+
+    }
+
+    public enum ReservationStatus
+    {
+        Pending = 0,
+        PaymentSent = 1,
+        PaymentAccepted = 2,
+        PaymentRejected = 3,
+        Complete = 4,
+        Cancelled = 5
+    }
+
+
+
+    /// <summary>
+    /// Wedding, Debut, Children Party, Corporate Event
+    /// </summary>
+    public class Package
+    {
+        public Package()
+        {
+            Items = new List<PackageItem>();
+        }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string PackageId { get; set; }
+
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        public virtual ICollection<PackageItem> Items { get; set; }
+        public virtual ICollection<PackageImage> Images { get; set; }
+    }
+
+    public class PackageItem
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string PackageItemId { get; set; }
+
+        public string PackageId { get; set; }
+        public virtual Package Package { get; set; }
+
+        public string Name { get; set; }
+        public string Category { get; set; }
+        public string Type { get; set; }
+        public double Price { get; set; }
+        public string ImageUrl { get; set; }
+    }
+
+    public class PackageImage
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string PackageImageId { get; set; }
+
+        public string PackageId { get; set; }
+        public virtual Package Package { get; set; }
+
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+
+        public double Price { get; set; }
+    }
+
     public class Reservation
     {
         public Reservation()
@@ -51,6 +133,11 @@ namespace catering.web.Data
 
         public string PackageId { get; set; }
         public virtual Package Package { get; set; }
+
+        public string Title { get; set; }
+
+        public string Venue { get; set; }
+
         public virtual ICollection<ReservationItem> ReservationItems { get; set; }
 
         public int GuestCount { get; set; }
@@ -73,6 +160,9 @@ namespace catering.web.Data
         public decimal SoundSystemPrice { get; set; }
         public decimal FlowerPrice { get; set; }
 
+        public decimal FixedCost { get; set; }
+        public decimal FixedLabor { get; set; }
+
         public string ReferenceNumber { get; set; }
 
         public decimal AmountPaid { get; set; }
@@ -80,8 +170,8 @@ namespace catering.web.Data
         public virtual ICollection<ReservationNote> Notes { get; set; }
         public virtual ICollection<ShortMessage> ShortMessages { get; set; }
 
-        public DateTime DateStart { get; set; }
-        public DateTime DateEnd { get; set; }
+        public DateTimeOffset DateStart { get; set; }
+        public DateTimeOffset DateEnd { get; set; }
 
 
         [NotMapped]
@@ -103,7 +193,7 @@ namespace catering.web.Data
 
         [NotMapped]
         public decimal TotalPrice => PlateExtPrice + SpoonExtPrice + ForkExtPrice + GlassExtPrice
-            + ChairExtPrice + TableExtPrice + FlowerExtPrice + SoundSystemExtPrice;
+            + ChairExtPrice + TableExtPrice + FlowerExtPrice + SoundSystemExtPrice + FixedCost + FixedLabor;
 
         [NotMapped]
         public decimal AmountDue => TotalPrice - AmountPaid;

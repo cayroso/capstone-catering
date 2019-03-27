@@ -37,7 +37,7 @@ namespace catering.web.Pages.Account
             [Required]
             [DataType(DataType.EmailAddress)]
             public string Email { get; set; }
-            public string Phone { get; set; }
+            public string Address { get; set; }
             [Required]            
             public string Mobile { get; set; }            
         }
@@ -45,12 +45,11 @@ namespace catering.web.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public void OnGet(string returnUrl = null)
         {
            
         }
 
-        [HttpPost]
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
@@ -88,7 +87,7 @@ namespace catering.web.Pages.Account
                     Password = Input.Password,
                     FullName = Input.FullName,
                     Email = Input.Email,
-                    Phone = Input.Phone,
+                    Address = Input.Address,
                     Mobile = Input.Mobile,
                 };
 

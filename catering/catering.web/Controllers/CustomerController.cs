@@ -36,8 +36,9 @@ namespace catering.web.Controllers
                 .Include(p => p.Package)
                     .ThenInclude(p => p.Items)
                 .Include(p => p.ReservationItems)
-                
+
                 .Where(p => p.UserId == GetUserId())
+                .OrderByDescending(p => p.DateStart)
                 .ToListAsync();
 
             items.ForEach(p =>
@@ -61,7 +62,7 @@ namespace catering.web.Controllers
             var reservation = await _appDbContext
                 .Reservations
                 .Include(p => p.Notes)
-                .Include(p=> p.User)
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.UserId == GetUserId() && p.ReservationId == info.Id);
 
 
@@ -76,9 +77,9 @@ namespace catering.web.Controllers
 
             var body = $"Your payment with reference # {reservation.ReferenceNumber} was Accepted by the system.";
             await SendNotification(reservation.ReservationId, "system", reservation.User.Mobile, "Reservation Payment Accepted", body);
-            
+
             await _appDbContext.SaveChangesAsync();
-            
+
             return Ok();
         }
 
@@ -89,7 +90,7 @@ namespace catering.web.Controllers
             var reservation = await _appDbContext
                 .Reservations
                 .Include(p => p.Notes)
-                .Include(p=> p.User)
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.UserId == GetUserId() && p.ReservationId == id);
 
 
@@ -101,7 +102,7 @@ namespace catering.web.Controllers
             var now = DateTime.UtcNow.Date;
 
             //  cannot cancel if reservation is paid and due tomorrow
-            if(reservation.ReservationStatus == ReservationStatus.PaymentAccepted && now.AddDays(1) >= reservation.DateStart )
+            if (reservation.ReservationStatus == ReservationStatus.PaymentAccepted && now.AddDays(1) >= reservation.DateStart)
             {
                 var body1 = $"Your reservation with payment reference # {reservation.ReferenceNumber} cannot be cancelled due to being already paid and due tomorrow.";
                 await SendNotification(reservation.ReservationId, "system", reservation.User.Mobile, "Cancel Reservation Rejected", body1);
@@ -128,11 +129,11 @@ namespace catering.web.Controllers
             try
             {
                 var token = Request.Form["stripeToken"];
-                var amount = (long)(decimal.Parse(Request.Form["amount"])*100);
+                var amount = (long)(decimal.Parse(Request.Form["amount"]) * 100);
                 var reservationId = Request.Form["reservationId"];
 
                 var data = await _appDbContext.Reservations
-                    .Include(p=> p.User)
+                    .Include(p => p.User)
                     .FirstOrDefaultAsync(p => p.ReservationId == reservationId);
 
                 if (data == null)
@@ -142,7 +143,7 @@ namespace catering.web.Controllers
 
                 var apiKey = _configuration.GetSection("AppSettings")["StripeSecret"];
                 StripeConfiguration.SetApiKey(apiKey);
-                
+
                 var options = new ChargeCreateOptions
                 {
                     Amount = amount,
@@ -162,7 +163,7 @@ namespace catering.web.Controllers
 
                 return Ok(charge);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex);
             }

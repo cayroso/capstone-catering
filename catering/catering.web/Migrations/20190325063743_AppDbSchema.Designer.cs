@@ -9,8 +9,8 @@ using catering.web.Data;
 namespace catering.web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190320150550_appdbschema")]
-    partial class appdbschema
+    [Migration("20190325063743_AppDbSchema")]
+    partial class AppDbSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,6 +50,10 @@ namespace catering.web.Migrations
                     b.Property<decimal>("Chair");
 
                     b.Property<DateTime>("DateCreated");
+
+                    b.Property<decimal>("FixedCost");
+
+                    b.Property<decimal>("FixedLabor");
 
                     b.Property<decimal>("Flower");
 
@@ -110,6 +114,8 @@ namespace catering.web.Migrations
 
                     b.Property<string>("Category");
 
+                    b.Property<string>("ImageUrl");
+
                     b.Property<string>("Name");
 
                     b.Property<string>("PackageId");
@@ -135,9 +141,13 @@ namespace catering.web.Migrations
 
                     b.Property<decimal>("ChairPrice");
 
-                    b.Property<DateTime>("DateEnd");
+                    b.Property<DateTimeOffset>("DateEnd");
 
-                    b.Property<DateTime>("DateStart");
+                    b.Property<DateTimeOffset>("DateStart");
+
+                    b.Property<decimal>("FixedCost");
+
+                    b.Property<decimal>("FixedLabor");
 
                     b.Property<decimal>("FlowerPrice");
 
@@ -175,7 +185,11 @@ namespace catering.web.Migrations
 
                     b.Property<decimal>("TablePrice");
 
+                    b.Property<string>("Title");
+
                     b.Property<string>("UserId");
+
+                    b.Property<string>("Venue");
 
                     b.HasKey("ReservationId");
 
@@ -275,6 +289,8 @@ namespace catering.web.Migrations
                 {
                     b.Property<string>("UserId");
 
+                    b.Property<string>("Address");
+
                     b.Property<string>("Email");
 
                     b.Property<string>("FullName");
@@ -282,8 +298,6 @@ namespace catering.web.Migrations
                     b.Property<string>("Mobile");
 
                     b.Property<string>("Password");
-
-                    b.Property<string>("Phone");
 
                     b.Property<string>("UserName");
 

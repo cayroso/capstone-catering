@@ -1,0 +1,80 @@
+﻿@page
+@model catering.web.Pages.About.IndexModel
+@{
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <div id="map" style="height: 700px; width:100%;"></div>
+    </div>
+    <div class="col-md-7">
+        <div class="card ">
+            <div class="card-header bg-info text-white">
+                <h4 class="card-title">
+                    <span class="fas fa-fw fa-history"></span>&nbsp;History
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                EC's (Esing Contreras's) Catering Services was registered on 1996 at Bulihan, Rosario, Batangas.<br /> 
+                It was owned by Mrs. Felicisima Contreras who is a former tailor.<br />
+                She thought of starting a catering business when she experienced a good catering<br />
+                service on a wedding reception. Her daughter gave her an investment to start just a small catering<br />
+                business that became known at their community. Since then, their relatives on that place hired them.<br />
+                Because of their excellent and affordable high-quality services, a lot of people also wanted their<br />
+                service and started to make reservations for their own occasions.<br />
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-info text-white">
+                <h4 class="card-title">
+                    <span class="fas fa-fw fa-phone-square"></span>&nbsp;Contact Information
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <b>Phone No</b>
+                    <span>0935906020 and 09498563326</span>
+                </div>
+                <div class="form-group">
+                    <b>Facebook</b>
+                    <a href="www.facebook.com/EC-Catering-Services">www.facebook.com/EC-Catering-Services</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-info text-white">
+                <h4 class="card-title">
+                    <span class="fas fa-fw fa-address-book"></span>&nbsp;Address
+                </h4>
+            </div>
+            <div class="card-body">
+                <b>Sitio Mauricio, Brgy. Bulihan, Rosario, Batangas</b>
+            </div>
+        </div>
+    </div>
+</div>
+
+ @*style="height: 400px; width:100%;"*@
+
+@section scripts{
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpG60SoPQruPwO-1RkmFwsKUSXeFt9tTM&callback=initMap">
+    </script>
+
+    <script type="text/javascript">
+        function initMap() {
+            // The location of Uluru
+            var uluru = { lat: 13.794175, lng: 121.234764 };
+            // The map, centered at Uluru
+            var map = new google.maps.Map(
+                document.getElementById('map'), { zoom: 18, center: uluru, mapTypeId: 'satellite' });
+            // The marker, positioned at Uluru
+            var marker = new google.maps.Marker({ position: uluru, map: map });
+
+            //debugger;
+        }
+    </script>
+}

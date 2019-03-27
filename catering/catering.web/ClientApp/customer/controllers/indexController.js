@@ -25,9 +25,10 @@ app.controller('indexController', function ($http) {
                     var item = resp.data[i];
 
                     events.push({
-                        title: item.package.name,
+                        title: item.title,
                         start: $.fullCalendar.moment(item.dateStart),
                         end: $.fullCalendar.moment(item.dateEnd),
+                        
                     });
                 }
 

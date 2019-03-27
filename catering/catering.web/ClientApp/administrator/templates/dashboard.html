@@ -1,19 +1,20 @@
 ﻿<div ng-controller="dashboardController as $ctrl">
-    <h4>Dashboard</h4>
-    <hr />
+    <!--<h4>Dashboard</h4>
+    <br />-->
     <div class="row">
         <div class="col-md-5">
-            <div class="card">
-                <div class="card-header  bg-primary">Reservations</div>
-                <div id="calendar" class="p-2"></div>
+            <div class="card border-primary">
+                <div class="card-header bg-secondary text-white">
+                    <span class="fas fa-fw fa-calendar-check"></span> Reservations
+                </div>
+                <div id="calendar" class="bg-secondary text-white p-2"></div>
             </div>
-        </div>
-        <div class="col-md-7">
+            <br />
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-header bg-warning text-center">
-                            Pending
+                    <div class="card mb-2">
+                        <div class="card-header bg-info text-white text-center">
+                            <span class="fas fa-fw fa-exclamation-triangle"></span> Pending
                         </div>
                         <div class="card-body text-center">
                             <h3>{{$ctrl.data.pending}}</h3>
@@ -22,9 +23,9 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-header bg-primary text-center"">
-                            Paid
+                    <div class="card mb-2">
+                        <div class="card-header bg-info text-white text-center" ">
+                            <span class="fas fa-fw fa-money-bill"></span>&nbsp;Paid
                         </div>
                         <div class="card-body text-center">
                             <h3>{{$ctrl.data.paid}}</h3>
@@ -33,9 +34,9 @@
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-header bg-success text-center"">
-                            Complete
+                    <div class="card mb-2">
+                        <div class="card-header bg-info text-white text-center">
+                            <span class="fas fa-fw fa-check-square"></span>&nbsp;Complete
                         </div>
                         <div class="card-body text-center">
                             <h3>{{$ctrl.data.completed}}</h3>
@@ -44,54 +45,93 @@
                     </div>
                 </div>
             </div>
-            <br />
-            <div ng-if="$ctrl.data.today.length" class="row">
-                <div class="col-sm-12">
-                    Today Events
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Package</th>
-                                    <th>Date</th>
-                                    <th>Total Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in $ctrl.data.today">
-                                    <td>{{item.package.name}}</td>
-                                    <td>{{item.dateStart | date:'medium'}}</td>
-                                    <td>{{item.totalPrice | number:'2'}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+        </div>
+        <div class="col-md-7">
+
+                    <div ng-if="$ctrl.data.today.length" class="card mb-2">
+                        <div class="card-header bg-success text-white">
+                            Today Events
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Package</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in $ctrl.data.today">
+                                        <td>{{item.package.name}}</td>
+                                        <td>{{item.title}}</td>
+                                        <td>{{item.dateStart | date:'medium'}}</td>
+                                        <td>{{item.totalPrice | number:'2'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <br />
-            <div ng-if="$ctrl.data.upcoming.length" class="row">
-                <div class="col-sm-12">
-                    Upcoming Events
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Package</th>
-                                    <th>Date</th>
-                                    <th>Total Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in $ctrl.data.upcoming">
-                                    <td>{{item.package.name}}</td>
-                                    <td>{{item.dateStart | date:'medium'}}</td>
-                                    <td>{{item.totalPrice | number:'2'}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                
+                    <div ng-if="$ctrl.data.upcoming.length" class="card card mb-2">
+                        <div class="card-header bg-primary text-white">
+                            Upcoming Events
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Package</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Due</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in $ctrl.data.upcoming">
+                                        <td>{{item.package.name}}</td>
+                                        <td>{{item.title}}</td>
+                                        <td>{{item.dateStart | date:'medium'}}</td>
+                                        <td>{{item.fromNow}}</td>
+                                        <td>{{item.totalPrice | number:'2'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            </div>
+
+                
+           
+                    <div ng-if="$ctrl.data.overdue.length" class="card card mb-2">
+                        <div class="card-header bg-warning text-white">
+                            Past/Overdue Events
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Package</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Past Due</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in $ctrl.data.overdue">
+                                        <td>{{item.package.name}}</td>
+                                        <td>{{item.title}}</td>
+                                        <td>{{item.dateStart | date:'medium'}}</td>
+                                        <td>{{item.toNow}}</td>
+                                        <td>{{item.totalPrice | number:'2'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
         </div>
     </div>
 

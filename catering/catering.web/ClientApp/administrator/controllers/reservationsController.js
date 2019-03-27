@@ -1,6 +1,7 @@
 ﻿
 import 'jquery';
 import app from '../app';
+import moment from 'moment';
 
 app.controller('reservationsController', function ($http, toastr) {
     const vm = this;
@@ -43,6 +44,8 @@ app.controller('reservationsController', function ($http, toastr) {
                 vm.items = resp.data;          
                 for (var i = 0; i < vm.items.length; i++) {
                     var item = vm.items[i];
+
+                    item.toNow = moment(item.dateStart).fromNow();
 
                     if (item.reservationStatus === 0) {
                         item.reservationStatusText = 'Pending';

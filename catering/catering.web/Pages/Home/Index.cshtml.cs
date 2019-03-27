@@ -35,14 +35,8 @@ namespace catering.web.Pages.Home
 
             items.ForEach(p =>
             {
-                var s1 = p.DateStart;
-                var e1 = p.DateEnd;
-
-                var s = new DateTime(s1.Year, s1.Month, s1.Day, s1.Hour, s1.Minute, 0, DateTimeKind.Utc);
-                var e = new DateTime(e1.Year, e1.Month, e1.Day, e1.Hour, e1.Minute, 0, DateTimeKind.Utc);
-
-                p.DateStart = s;
-                p.DateEnd = e;
+                p.DateStart = new DateTime(p.DateStart.Ticks, DateTimeKind.Utc);
+                p.DateEnd = new DateTime(p.DateEnd.Ticks, DateTimeKind.Utc);
             });
 
             return new JsonResult(items);

@@ -1,8 +1,8 @@
 ﻿
 <div class="row" ng-controller="reservationController as $ctrl">
     <div class="col-md-5">
-        <div class="card">
-            <div class="bg-light m-1">
+        <div class="card border-success">
+            <div class="m-2">
                 <div id='calendar'></div>
             </div>
         </div>
@@ -11,18 +11,23 @@
     <div class="col-md-7">
 
         <!-- package -->
-        <div class="card">
-            <div class="card-header">
+        <div class="card border-success">
+            <div class="card-header bg-dark text-white">
                 <div class="row">
                     <div class="col-sm-5">
                         <h5><span class="fas fa-fw fa-calculator"></span>&nbsp;Calculator</h5>
                     </div>
                     <div class="col-sm-7">
-                        
+
                         <div class="text-right">
-                            <button ng-click="$ctrl.checkAvailability()" class="btn btn-sm btn-outline-secondary">Check Availability</button>
+                            <button ng-click="$ctrl.checkAvailability()" class="btn btn-sm btn-outline-info">Check Availability</button>
                             <button ng-click="$ctrl.reset()" class="btn btn-sm btn-outline-warning">Reset</button>
-                            <button ng-click="$ctrl.processForm()" ng-disabled="!$ctrl.pricing.total" class="btn btn-sm btn-outline-primary">Reserve</button>
+                            <!--<button ng-click="$ctrl.processForm()"
+                                    ng-disabled="!$ctrl.pricing.total"
+                                    class="btn btn-sm"
+                                    ng-class="{'btn-outline-primary': $ctrl.pricing.total<=0, 'btn-primary': $ctrl.pricing.total>0}">
+                                Reserve
+                            </button>-->
                         </div>
                     </div>
                 </div>
@@ -31,12 +36,19 @@
             <div class="card-body">
                 <div class="form-horizontal">
                     <div class="row form-group">
-                        <label class="col-sm-3 control-label text-right">Package</label>
+                        <label class="col-sm-3 control-label text-right">Title</label>
                         <div class="col-sm-8">
-                            <select name="package" id="package" ng-model="$ctrl.formData.package" ng-change="$ctrl.reset()" class="form-control"
-                                    ng-options="option.name for option in $ctrl.lookups.packages track by option.packageId"></select>
+                            <input type="text" ng-model="$ctrl.formData.title" class="form-control" />
                         </div>
                     </div>
+                    <div class="row form-group">
+                        <label class="col-sm-3 control-label text-right">Venue</label>
+                        <div class="col-sm-8">
+                            <textarea rows="3" ng-model="$ctrl.formData.venue" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+
                     <div class="row form-group">
                         <label class="col-sm-3 control-label text-right">Event Start</label>
                         <div class="col-sm-8">
@@ -63,6 +75,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row form-group">
+                        <label class="col-sm-3 control-label text-right">Package</label>
+                        <div class="col-sm-8">
+                            <select name="package" id="package" ng-model="$ctrl.formData.package" ng-change="$ctrl.reset()" class="form-control"
+                                    ng-options="option.name for option in $ctrl.lookups.packages track by option.packageId"></select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -71,7 +91,7 @@
         </div>
 
         <div ng-if="$ctrl.formData.package" class="card border-success mt-2">
-            <div class="card-header bg-success text-white">
+            <div class="card-header  bg-dark text-white">
                 <h5><span class="fas fa-fw fa-list"></span>&nbsp;Details</h5>
             </div>
             <div class="table-responsive">
@@ -201,10 +221,29 @@
                                 </span>
                             </td>
                         </tr>
+                        <tr class="border-info">
+                            <td class="text-right">Fixed Cost</td>
+                            <td class="text-info">
+                                <small>This is for additional small items needed</small>
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span>{{$ctrl.pricing.fixedCost| number:'2'}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Fixed Labor</td>
+                            <td class="text-info">
+                                <small>This is for additional small labor needed</small>
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span>{{$ctrl.pricing.fixedLabor| number:'2'}}</span>
+                            </td>
+                        </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-right" colspan="3">Total Price</th>
+                            <td colspan="2" class="text-danger">This is just an estimated price.<br />The price may change depending on the venue.</td>
+                            <th class="text-right">Total Price</th>
                             <th class="text-right">
                                 {{ $ctrl.pricing.total | number:'2'}}
                             </th>
@@ -215,8 +254,8 @@
 
         </div>
 
-        <div ng-if="$ctrl.pricing.total>0" class="card mt-2">
-            <div class="card-header">
+        <div ng-if="$ctrl.pricing.total>0" class="card border-success mt-2">
+            <div class="card-header bg-dark text-white">
                 <h5><span class="fas fa-fw fa-layer-group"></span>&nbsp;Preferred Layout and Comments</h5>
             </div>
             <div class="card-body">
@@ -238,18 +277,25 @@
                     <b>Notes and Comments</b>
                 </div>
                 <textarea ng-model="$ctrl.formData.notes" rows="4" class="form-control"></textarea>
-                
+                <div class="mt-3">
+                    <button ng-click="$ctrl.processForm()"
+                            ng-disabled="!$ctrl.pricing.total"
+                            class="btn btn-lg"
+                            ng-class="{'btn-outline-primary': $ctrl.pricing.total<=0, 'btn-primary': $ctrl.pricing.total>0}">
+                        Reserve
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div ng-if="$ctrl.pricing.total>0" class="card border-success mt-2">
+        <!--<div ng-if="$ctrl.pricing.total>0" class="card border-success mt-2">
             <div class="card-header bg-success text-white">
                 <h5><span class="fas fa-fw fa-paper-plane"></span>&nbsp;Complete Your Reservation</h5>
             </div>
             <div class="card-body bg-white">
                 <div class="row">
                     <div class="col-sm-4">
-                        <button ng-click="$ctrl.processForm(1)"  class="btn btn-lg btn-primary">Submit Reservation</button>
+                        <button ng-click="$ctrl.processForm(1)" class="btn btn-lg btn-primary">Submit Reservation</button>
                     </div>
                     <div class="col-sm-4">
                         <button class="btn btn-lg btn-primary">Submit Reservation then Pay Via Credit Card</button>
@@ -261,9 +307,9 @@
 
 
             </div>
-        </div>
+        </div>-->
     </div>
 
-    
+
 </div>
 

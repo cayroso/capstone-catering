@@ -3,6 +3,8 @@ import angular from 'angular';
 import app from '../app';
 import $ from 'jquery';
 import { setInterval } from 'timers';
+import moment from 'moment';
+import { debug } from 'util';
 
 app.controller('myReservationsController', function ($http, toastr, $uibModal, $timeout) {
     const vm = this;
@@ -118,6 +120,11 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
     };
 
     vm.cancelReservation = function() {
+        var resp = confirm('Are you sure you want to cancel this reservation?');
+
+        if (!resp) {
+            return;
+        }
 
         $http.post(`api/customer/cancelReservation/${vm.selectedItem.reservationId}`)
             .then(function (resp) {
@@ -132,9 +139,11 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
         $http.get('api/customer/reservations')
             .then(function (resp) {
                 vm.items = resp.data;
-
+                
                 for (var i = 0; i < vm.items.length; i++) {
                     var item = vm.items[i];
+
+                    item.toNow = moment(item.dateStart).fromNow();
 
                     if (item.reservationStatus === 0) {
                         item.reservationStatusText = 'Pending';

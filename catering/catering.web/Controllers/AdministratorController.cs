@@ -36,7 +36,7 @@ namespace catering.web.Controllers
         {
             var now = DateTime.UtcNow.Date;
             var start = new DateTime(now.Year, now.Month, 1);
-            var end = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month));
+            var end = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)).AddDays(1).AddMinutes(-1);
 
             var items = await _appDbContext
                 .Reservations
@@ -46,11 +46,32 @@ namespace catering.web.Controllers
                 .Where(p => p.DateStart >= start && p.DateEnd <= end)
                 .ToListAsync();
 
+            items.ForEach(p =>
+            {
+                p.DateStart = new DateTime(p.DateStart.Ticks, DateTimeKind.Utc);
+                p.DateEnd = new DateTime(p.DateEnd.Ticks, DateTimeKind.Utc);
+            });
+
             var dashboard = new DashboardInfo
             {
                 Reservations = items,
                 Today = items.Where(p => p.DateStart.Date == now || p.DateEnd.Date == now).ToList(),
-                Upcoming = items.Where(p => p.DateStart.Date > now).ToList(),
+                Upcoming = items.Where(p =>
+                    p.DateStart.Date > now
+                    && p.DateEnd.Date > now
+                    && (p.ReservationStatus == ReservationStatus.Pending
+                        || p.ReservationStatus != ReservationStatus.PaymentAccepted
+                        || p.ReservationStatus != ReservationStatus.PaymentSent
+                        )
+                    ).ToList(),
+                Overdue = items.Where(p =>
+                    p.DateStart.Date < now
+                    && p.DateEnd.Date < now
+                    && (p.ReservationStatus == ReservationStatus.Pending
+                        || p.ReservationStatus != ReservationStatus.PaymentAccepted
+                        || p.ReservationStatus != ReservationStatus.PaymentSent
+                        )
+                    ).ToList(),
 
                 Pending = items.Count(p => p.ReservationStatus == ReservationStatus.Pending),
                 Paid = items.Count(p => p.ReservationStatus == ReservationStatus.PaymentAccepted),
@@ -202,7 +223,7 @@ namespace catering.web.Controllers
             return Ok(items);
         }
 
-        [HttpPost("packages/item")]
+        [HttpPost("packages/itemAdd")]
         public async Task<IActionResult> AddPackageItem([FromBody]AddPackageImageInfo info)
         {
             var package = await _appDbContext
@@ -230,6 +251,30 @@ namespace catering.web.Controllers
             await _appDbContext.SaveChangesAsync();
 
             return Created(image.PackageImageId, image);
+        }
+
+        [HttpPost("packages/itemEdit")]
+        public async Task<IActionResult> EditPackageItem([FromBody]EditPackageImageInfo info)
+        {
+            var data = await _appDbContext
+                .PackageImages
+                .FirstOrDefaultAsync(p => p.PackageImageId == info.PackageImageId);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            data.Name = info.Name;
+            data.Description = info.Description;
+
+            var packageImageId = Guid.NewGuid().ToString();
+
+            _appDbContext.Update(data);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Created(data.PackageImageId, data);
         }
 
         [HttpPost("packages/item/{id}/image")]
@@ -310,6 +355,7 @@ namespace catering.web.Controllers
 
         #endregion
 
+
         string GetUserId()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -338,6 +384,7 @@ namespace catering.web.Controllers
         public List<Reservation> Reservations { get; set; }
         public List<Reservation> Today { get; set; }
         public List<Reservation> Upcoming { get; set; }
+        public List<Reservation> Overdue { get; set; }
 
 
         public int Pending { get; set; }
@@ -351,5 +398,10 @@ namespace catering.web.Controllers
         public string PackageId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+    }
+
+    public class EditPackageImageInfo : AddPackageImageInfo
+    {
+        public string PackageImageId { get; set; }
     }
 }

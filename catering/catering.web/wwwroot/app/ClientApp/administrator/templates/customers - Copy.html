@@ -1,0 +1,28 @@
+﻿<div ng-controller="customersController as $ctrl">
+    <h4>Customers</h4>
+    <hr />
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Mobile</th>
+                    <th># of Reservations</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)">
+                    <td>{{item.fullName}}</td>
+                    <td>{{item.email}}</td>
+                    <td>{{item.phone}}</td>
+                    <td>{{item.mobile}}</td>
+
+                    <td>{{item.reservations.length}}</td>
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

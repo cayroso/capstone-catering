@@ -47,6 +47,7 @@
                                     <span class="fa fa-fw fa-sign-out"></span>&nbsp;Sign Out
                                 </button>
                             </form>
+                            
                         }
                     </div>
                 </div>
@@ -74,7 +75,9 @@
                             </a>
                         }
                     }
-
+                    <a class="p-2 btn-outline-light" href='@Url.Content("~/About")'>
+                        <span class="fa fa-fw fa-info-circle"></span>&nbsp;About Us
+                    </a>
                 </nav>
             </div>
         </div>
@@ -101,6 +104,6 @@
     <script src="~/app/vendor-bundle.js" asp-append-version="true"></script>
     <script src="~/app/customer.js" asp-append-version="true"></script>
 
-    @RenderSection("Scripts", required: false)
+    @RenderSection("scripts", required: false)
 </body>
 </html>

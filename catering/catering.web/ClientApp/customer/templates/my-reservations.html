@@ -8,7 +8,10 @@
             <thead>
                 <tr>
                     <th>Status</th>
+                    <th>Title</th>
+                    <th>Venue</th>
                     <th>Package</th>
+                    <th>Due</th>
                     <th>Start</th>
                     <th>End</th>
 
@@ -19,23 +22,17 @@
                     <th ng-if="$ctrl.selectedItem">
                         Actions
                     </th>
-                    <!--<th>Guest</th>
-                    <th>Plate</th>
-                    <th>Spoon</th>
-                    <th>Fork</th>
-                    <th>Glass</th>
-                    <th>Chair</th>
-                    <th>Table</th>
-
-                    <th>Sound System</th>
-                    <th>Flowers</th>-->
+                    
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)"
                     ng-class="{ 'text-warning': item.reservationStatus == 0, 'text-info': item.reservationStatus == 1, 'text-success': item.reservationStatus === 2, 'text-danger': item.reservationStatus === 3 }">
                     <td>{{item.reservationStatusText}}</td>
+                    <td>{{item.title}}</td>
+                    <td>{{item.venue}}</td>
                     <td>{{item.package.name}}</td>
+                    <td>{{item.toNow}}</td>
                     <td>{{item.dateStart | date:'medium'}}</td>
                     <td>{{item.dateEnd | date:'medium'}}</td>
 
@@ -53,7 +50,7 @@
                             <button ng-click="$ctrl.setPayment()" ng-if="item.reservationStatus === 0" class="btn btn-sm btn-outline-info">
                                 <span class="fas fa-fw fa-money-bill"></span>&nbsp;Smart Padala Payment
                             </button>
-                            
+
                         </span>
 
                         <form ng-if="$ctrl.selectedItem === item && item.reservationStatus === 0"
@@ -72,20 +69,20 @@
                             </script>
                         </form>
 
-                        <button ng-click="$ctrl.cancelReservation()" ng-if="item.reservationStatus === 0 || item.reservationStatus === 1" class="btn btn-sm btn-outline-danger">
+                        <button ng-click="$ctrl.cancelReservation()" ng-if="$ctrl.selectedItem === item && (item.reservationStatus === 0 || item.reservationStatus === 1)" class="btn btn-sm btn-outline-danger">
                             <span class="fas fa-trash"></span>&nbsp;Cancel
                         </button>
                     </td>
                     <!--<td>{{item.guestCount | number:'2'}}</td>
-                    <td>{{item.plateCount | number:'2'}}</td>
-                    <td>{{item.spoonCount | number:'2'}}</td>
-                    <td>{{item.forkCount | number:'2'}}</td>
-                    <td>{{item.glassCount | number:'2'}}</td>
-                    <td>{{item.chairCount | number:'2'}}</td>
-                    <td>{{item.tableCount | number:'2'}}</td>
+    <td>{{item.plateCount | number:'2'}}</td>
+    <td>{{item.spoonCount | number:'2'}}</td>
+    <td>{{item.forkCount | number:'2'}}</td>
+    <td>{{item.glassCount | number:'2'}}</td>
+    <td>{{item.chairCount | number:'2'}}</td>
+    <td>{{item.tableCount | number:'2'}}</td>
 
-                    <td>{{item.hasSoundSystem}}</td>
-                    <td>{{item.hasFlowers}}</td>-->
+    <td>{{item.hasSoundSystem}}</td>
+    <td>{{item.hasFlowers}}</td>-->
 
                 </tr>
             </tbody>

@@ -13,3 +13,5 @@ import './controllers/dashboardController';
 import './controllers/reservationsController';
 import './controllers/customersController';
 import './controllers/packagesController';
+import './controllers/messagesController';
+import './controllers/pricingController';

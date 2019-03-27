@@ -7,11 +7,13 @@ app.controller('reservationController', function ($http, toastr) {
     var vm = this;
 
     var n = new Date();
-    var start = new Date(n.getFullYear(), n.getMonth(), n.getDate()+1, n.getHours());
-    var end = new Date(n.getFullYear(), n.getMonth(), n.getDate()+1, n.getHours());
-    
+    var start = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1, n.getHours());
+    var end = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1, n.getHours());
+
     // we will store all of our form data in this object
     vm.formData = {
+        title: '',
+        venue: '',
         starterCount: 0,
         mainCount: 0,
         drinkCount: 0,
@@ -29,35 +31,48 @@ app.controller('reservationController', function ($http, toastr) {
         drinks: []
     };
 
-    vm.setPackage = function (pkg) {        
+    vm.setPackage = function (pkg) {
         if (vm.formData.package !== pkg) {
             vm.reset();
         }
     };
     vm.reset = function () {
         vm.pricing = angular.copy(vm.originalPricing);
-       
+
     };
     vm.checkAvailability = function () {
 
-        var start = moment(vm.formData.startDate)
-            .add(vm.formData.startTime.getHours(), 'hours')
-            .add(vm.formData.startTime.getMinutes(),'minutes')
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss');
-        var end = moment(vm.formData.endDate)
-            .add(vm.formData.endTime.getHours(), 'hours')
-            .add(vm.formData.endTime.getMinutes(), 'minutes')
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss');
+        var s1 = vm.formData.startDate;
+        var t1 = vm.formData.startTime;
+        var start = moment(new Date(s1.getFullYear(), s1.getMonth(), s1.getDate(), t1.getHours(), t1.getMinutes(), 0, 0)).utc().valueOf();
         
-        var url = `api/reservations/availability/${start}/${end}`;
-        //debugger
+        var s2 = vm.formData.startDate;
+        var t2 = vm.formData.startTime;
+        var end  = moment(new Date(s2.getFullYear(), s2.getMonth(), s2.getDate(), t2.getHours(), t2.getMinutes(), 0, 0)).utc().valueOf();
+        
+        //var start = moment(vm.formData.startDate.getUTCDate())
+        //    .add(vm.formData.startTime.getHours(), 'hours')
+        //    .add(vm.formData.startTime.getMinutes(), 'minutes')
+        //    //.utc()
+        //    .valueOf()
+        //    //.format('YYYY-MM-DD HH:mm:ss')
+        //    ;
+
+        //var end = moment(vm.formData.endDate)
+        //    .add(vm.formData.endTime.getHours(), 'hours')
+        //    .add(vm.formData.endTime.getMinutes(), 'minutes')
+        //    //.utc()
+        //    .valueOf()
+        //    //.format('YYYY-MM-DD HH:mm:ss')
+        //    ;
+
+        var url = `api/reservations/availability/?startTicks=${start}&endTicks=${end}`;
+
         $http.get(url)
             .then(function (resp) {
-                toastr.info('Dates are Available', 'Succes');
+                toastr.info('Dates are Available', 'Succes', { timeOut: 0 });
             }, function (err) {
-                toastr.warning(err.data, 'Failed');
+                toastr.warning(err.data, 'Failed', { timeOut: 0 });
 
             });
     };
@@ -72,6 +87,7 @@ app.controller('reservationController', function ($http, toastr) {
         total += pricing.glass * pricing.glassCount || 0;
         total += pricing.chair * pricing.chairCount || 0;
         total += pricing.table * pricing.tableCount || 0;
+        total += pricing.fixedCost + pricing.fixedLabor;
 
         if (pricing.hasFlower) {
             total += pricing.flower;
@@ -100,6 +116,17 @@ app.controller('reservationController', function ($http, toastr) {
 
     vm.processForm = function (formType) {
 
+        var frm = vm.formData;
+
+        if (frm.title === '') {
+            toastr.warning('Enter title for event', 'Validation Error', { timeOut: 0 });
+            return;
+        }
+        if (frm.venue === '') {
+            toastr.warning('Enter venue for event', 'Validation Error', { timeOut: 0 });
+            return;
+        }
+
         var pricing = vm.pricing;
 
         var packageImageIds = [];
@@ -111,20 +138,19 @@ app.controller('reservationController', function ($http, toastr) {
                 packageImageIds.push(image.packageImageId);
             }
         }
-        
-        var start = moment(vm.formData.startDate)
-            .add(vm.formData.startTime.getHours(), 'hours')
-            .add(vm.formData.startTime.getMinutes(), 'minutes')
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss');
-        var end = moment(vm.formData.endDate)
-            .add(vm.formData.endTime.getHours(), 'hours')
-            .add(vm.formData.endTime.getMinutes(), 'minutes')
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss');
-        
+
+        var s1 = vm.formData.startDate;
+        var t1 = vm.formData.startTime;
+        var start = moment(new Date(s1.getFullYear(), s1.getMonth(), s1.getDate(), t1.getHours(), t1.getMinutes(), 0, 0)).utc().valueOf();
+
+        var s2 = vm.formData.endDate;
+        var t2 = vm.formData.endTime;
+        var end = moment(new Date(s2.getFullYear(), s2.getMonth(), s2.getDate(), t2.getHours(), t2.getMinutes(), 0, 0)).utc().valueOf();
+
         var payload = {
             packageId: vm.formData.package.packageId,
+            title: frm.title,
+            venue: frm.venue,
 
             guestCount: pricing.guestCount,
 
@@ -152,9 +178,11 @@ app.controller('reservationController', function ($http, toastr) {
             hasSoundSystem: pricing.hasSoundSystem,
             soundSystemPrice: pricing.soundSystem,
 
+            fixedCost: pricing.fixedCost,
+            fixedLabor: pricing.fixedLabor,
 
-            dateStart: start,
-            dateEnd: end,
+            dateStartTicks: start,
+            dateEndTicks: end,
 
             packageImageIds: packageImageIds,
             notes: vm.formData.notes
@@ -171,19 +199,32 @@ app.controller('reservationController', function ($http, toastr) {
             data: JSON.stringify(payload)
         }).done(function (result) {
             //debugger;
-            alert('Reservation has been created. Please check your account for more info');
-            window.location.reload();
+            //alert('Reservation has been created. Please check your account for more info');
+            toastr.success('Reservation has been created. Please check your account for more info',
+                'Reservation', {
+                    timeOut: 0,
+                    onTap: function () {
+                        window.location.reload();
+                    }
+                });
         }).fail(function (err) {
             //debugger;
             var message = err.responseJSON.message;
-            alert(message);
+            //alert(message);
+            toastr.error(message,
+                'Reservation', {
+                    timeOut: 0,
+                    onTap: function () {
+                        //window.location.reload();
+                    }
+                });
             //var conflicts = err.responseJSON.conflicts;
             //alert(message + JSON.stringify( conflicts));
         }).always(function () {
 
         });
 
-    }
+    };
 
     function getPackages() {
         $http.get('Reservations/?handler=Packages')
@@ -194,7 +235,7 @@ app.controller('reservationController', function ($http, toastr) {
                 //$scope.formData.package = $scope.lookups.packages[0];
                 //$scope.setPackage();
             }, function (err) {
-                debugger;
+                toastr.error(JSON.stringify(err), 'Contact Administrator');
             });
     }
 
@@ -204,7 +245,7 @@ app.controller('reservationController', function ($http, toastr) {
                 vm.pricing = resp.data;
                 vm.originalPricing = angular.copy(resp.data);
             }, function (err) {
-                debugger;
+                toastr.error(JSON.stringify(err), 'Contact Administrator');
             });
     }
 
@@ -221,7 +262,9 @@ app.controller('reservationController', function ($http, toastr) {
                 var item = resp.data[i];
 
                 events.push({
-                    title: item.package.name,
+                    title: item.title,
+                    //start: (item.dateStart),
+                    //end: (item.dateEnd)
                     start: $.fullCalendar.moment(item.dateStart),
                     end: $.fullCalendar.moment(item.dateEnd)
                 });
@@ -231,13 +274,13 @@ app.controller('reservationController', function ($http, toastr) {
                 // put your options and callbacks here
                 header: { center: 'month,agendaWeek' },
                 defaultView: 'month',
-                minTime: '07:00:00',
-                maxTime: '22:00:00',
+                minTime: '06:00:00',
+                maxTime: '24:00:00',
                 events: events
-            })
+            });
 
         }, function (err) {
-            debugger;
+            toastr.error(JSON.stringify(err), 'Contact Administrator');
         });
 
 

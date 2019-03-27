@@ -62,15 +62,8 @@ namespace catering.web.Pages.Reservations
 
             items.ForEach(p =>
             {
-                var s1 = p.DateStart;
-                var s = new DateTime(s1.Year, s1.Month, s1.Day, s1.Hour, s1.Minute, s1.Second, DateTimeKind.Utc);
-
-                var e1 = p.DateEnd;
-                var e = new DateTime(e1.Year, e1.Month, e1.Day, e1.Hour, e1.Minute, e1.Second, DateTimeKind.Utc);
-
-                p.DateStart = s;
-                p.DateEnd = e;
-
+                p.DateStart = new DateTime(p.DateStart.Ticks, DateTimeKind.Utc);
+                p.DateEnd = new DateTime(p.DateEnd.Ticks, DateTimeKind.Utc);
             });
 
             return new JsonResult(items);
@@ -83,40 +76,43 @@ namespace catering.web.Pages.Reservations
                 return BadRequest(new { message = "Register or SignIn before booking a catering service." });
             }
 
-            if (info.DateStart > info.DateEnd)
+            var dateStart = DateTimeOffset.FromUnixTimeMilliseconds(info.DateStartTicks);
+            var dateEnd = DateTimeOffset.FromUnixTimeMilliseconds(info.DateEndTicks);
+
+            if (dateStart > dateEnd)
             {
                 return BadRequest(new { message = "Date Start cannot exceed Date End." });
             }
 
             var now = DateTimeOffset.UtcNow;
 
-            if (info.DateStart <= now || info.DateEnd <= now)
+            if (dateStart <= now || dateEnd <= now)
             {
                 return BadRequest(new { message = "Cannot reserve today or to past dates" });
             }
 
-            if (info.DateStart == info.DateEnd)
+            if (dateStart == dateEnd)
             {
-                info.DateEnd = info.DateEnd.AddMinutes(59);
+                dateEnd = dateEnd.AddMinutes(59);
             }
             else
             {
-                info.DateEnd = info.DateEnd.AddSeconds(-1);
+               dateEnd = dateEnd.AddSeconds(-1);
             }
 
-            var startUtc = info.DateStart.UtcDateTime;
-            var endUtc = info.DateEnd.UtcDateTime;
+            //var startUtc = dateStart.UtcDateTime;
+            //var endUtc = dateEnd.UtcDateTime;
 
             var conflicts = _appDbContext.Reservations
                             .Where(p =>
                                 p.ReservationStatus != ReservationStatus.Cancelled
                                 &&
-                                ((startUtc >= p.DateStart && startUtc <= p.DateEnd) ||
-                                (endUtc >= p.DateStart && endUtc <= p.DateEnd))
+                                ((dateStart >= p.DateStart && dateStart <= p.DateEnd) ||
+                                (dateEnd >= p.DateStart && dateEnd <= p.DateEnd))
                                 )
                             .ToList();
 
-            if (conflicts.Count > 3)
+            if (conflicts.Count >= 3)
             {
                 var message = "Please Select another start or end date. Your reservation will conflict with existing ones.";
 
@@ -132,7 +128,8 @@ namespace catering.web.Pages.Reservations
                 ReservationId = reservationId,
                 UserId = user.UserId,
                 PackageId = info.PackageId,
-
+                Title = info.Title,
+                Venue = info.Venue,
                 GuestCount = info.GuestCount,
 
                 PlateCount = info.PlateCount,
@@ -151,12 +148,13 @@ namespace catering.web.Pages.Reservations
                 FlowerPrice = info.FlowerPrice,
                 HasSoundSystem = info.HasSoundSystem,
                 SoundSystemPrice = info.SoundSystemPrice,
-
+                FixedCost = info.FixedCost,
+                FixedLabor = info.FixedLabor,
                 AmountPaid = 0,
                 ReferenceNumber = string.Empty,
 
-                DateStart = startUtc,
-                DateEnd = endUtc,
+                DateStart = dateStart,
+                DateEnd = dateEnd,
                 ReservationStatus = ReservationStatus.Pending
             };
 
@@ -232,6 +230,10 @@ namespace catering.web.Pages.Reservations
 
         public int GuestCount { get; set; }
 
+        public string Title { get; set; }
+        public string Venue { get; set; }
+
+        
         public int PlateCount { get; set; }
         public int SpoonCount { get; set; }
         public int ForkCount { get; set; }
@@ -250,8 +252,11 @@ namespace catering.web.Pages.Reservations
         public decimal SoundSystemPrice { get; set; }
         public decimal FlowerPrice { get; set; }
 
-        public DateTimeOffset DateStart { get; set; }
-        public DateTimeOffset DateEnd { get; set; }
+        public decimal FixedCost { get; set; }
+        public decimal FixedLabor { get; set; }
+
+        public long DateStartTicks { get; set; }
+        public long DateEndTicks { get; set; }
 
         public List<string> PackageImageIds { get; set; }
 

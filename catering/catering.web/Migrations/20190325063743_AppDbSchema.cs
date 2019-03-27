@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace catering.web.Migrations
 {
-    public partial class appdbschema : Migration
+    public partial class AppDbSchema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -38,6 +38,8 @@ namespace catering.web.Migrations
                     Table = table.Column<decimal>(nullable: false),
                     Flower = table.Column<decimal>(nullable: false),
                     SoundSystem = table.Column<decimal>(nullable: false),
+                    FixedCost = table.Column<decimal>(nullable: false),
+                    FixedLabor = table.Column<decimal>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -79,7 +81,7 @@ namespace catering.web.Migrations
                     Password = table.Column<string>(nullable: true),
                     FullName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
-                    Phone = table.Column<string>(nullable: true),
+                    Address = table.Column<string>(nullable: true),
                     Mobile = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -118,7 +120,8 @@ namespace catering.web.Migrations
                     Name = table.Column<string>(nullable: true),
                     Category = table.Column<string>(nullable: true),
                     Type = table.Column<string>(nullable: true),
-                    Price = table.Column<double>(nullable: false)
+                    Price = table.Column<double>(nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -139,6 +142,8 @@ namespace catering.web.Migrations
                     ReservationStatus = table.Column<int>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
                     PackageId = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    Venue = table.Column<string>(nullable: true),
                     GuestCount = table.Column<int>(nullable: false),
                     PlateCount = table.Column<int>(nullable: false),
                     SpoonCount = table.Column<int>(nullable: false),
@@ -156,10 +161,12 @@ namespace catering.web.Migrations
                     TablePrice = table.Column<decimal>(nullable: false),
                     SoundSystemPrice = table.Column<decimal>(nullable: false),
                     FlowerPrice = table.Column<decimal>(nullable: false),
+                    FixedCost = table.Column<decimal>(nullable: false),
+                    FixedLabor = table.Column<decimal>(nullable: false),
                     ReferenceNumber = table.Column<string>(nullable: true),
                     AmountPaid = table.Column<decimal>(nullable: false),
-                    DateStart = table.Column<DateTime>(nullable: false),
-                    DateEnd = table.Column<DateTime>(nullable: false)
+                    DateStart = table.Column<DateTimeOffset>(nullable: false),
+                    DateEnd = table.Column<DateTimeOffset>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -18,7 +18,8 @@
                 <tr ng-repeat-start="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)">
                     <td rowspan="{{item.items.length+1}}">{{item.name}}</td>
                     <td rowspan="{{item.items.length+1}}">{{item.description}} </td>
-                    <td rowspan="{{item.items.length+1}}"><button ng-click="$ctrl.dlgOpenAddPackageItem(item)" class="btn btn-outline-primary">Add Package Item</button></td>
+                    <td rowspan="{{item.items.length+1}}"><button ng-click="$ctrl.dlgOpenAddPackageItem(item)" class="btn btn-outline-primary">
+                        <span class="fas fa-fw fa-plus"></span>&nbsp;Add Package Item</button></td>
                     <td></td>
                 </tr>
                 <tr ng-repeat-end="" ng-repeat="subItem in item.images">
@@ -27,66 +28,106 @@
                     <td>
                         <img ng-if="subItem.imageUrl" ng-src="{{subItem.imageUrl}}" class="img-fluid img-thumbnail img-responsive" style="width:64px; height:64px;" />
                     </td>
-                    <td class="btn-group-sm">
-
-                        <button ng-click="$ctrl.dlgOpenAddPackageItemImage(subItem)" class="btn btn-outline-warning">
-                            <span class="fas fa-fw fa-image"></span>
-                        </button>
-                        <button ng-click="$ctrl.removePackageItem(subItem)" class="btn btn-outline-danger">
-                            <span class="fas fa-fw fa-trash"></span>
-                        </button>
-
+                    <td>
+                        <span class="btn-group btn-group-sm">
+                            <button ng-click="$ctrl.dlgOpenEditPackageItem(subItem)" class="btn btn-outline-info">
+                                <span class="fas fa-fw fa-edit"></span>&nbsp;Edit Info
+                            </button>
+                            <button ng-click="$ctrl.dlgOpenAddPackageItemImage(subItem)" class="btn btn-outline-warning">
+                                <span class="fas fa-fw fa-file-image"></span>&nbsp;Edit Image
+                            </button>
+                            <button ng-click="$ctrl.removePackageItem(subItem)" class="btn btn-outline-danger">
+                                <span class="fas fa-fw fa-trash"></span>&nbsp;Delete
+                            </button>
+                        </span>
                     </td>
-                    
+
                 </tr>
-                
+
             </tbody>
         </table>
     </div>
 
 
     <script type="text/ng-template" id="modalAddPackageItem.html">
-        <div class="modal-header">
-            <h3 class="modal-title">Add Package Item</h3>
-        </div>
-        <div class="modal-body">
-            <div>
-                Package Item Name: <input ng-model="packageItem.name" class="form-control" />
+        <div>
+            <div class="modal-header">
+                <h5 class="modal-title">Add Package Item</h5>
             </div>
-            <div>
-                Package Item Description: <textarea rows="3" ng-model="packageItem.description" class="form-control"></textarea>
+            <div class="modal-body">
+                <div class="form-group">
+                    <!--<span>Name</span>-->
+                    <input ng-model="packageItem.name" class="form-control" placeholder="Enter the name of the package item" />
+                </div>
+                <div class="form-group">
+                    <!--<span>Description</span>-->
+                    <textarea rows="3" ng-model="packageItem.description" class="form-control" placeholder="Enter the description of the package item"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-primary" type="button" ng-click="ok()">Save</button>
+                <button class="btn btn-outline-warning" type="button" ng-click="cancel()">Cancel</button>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </script>
+
+    <script type="text/ng-template" id="modalEditPackageItem.html">
+        <div>
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Package Item</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <!--<span>Name</span>-->
+                    <input ng-model="packageItem.name" class="form-control" placeholder="Enter the name of the package item" />
+                </div>
+                <div class="form-group">
+                    <!--<span>Description</span>-->
+                    <textarea rows="3" ng-model="packageItem.description" class="form-control" placeholder="Enter the description of the package item"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-primary" type="button" ng-click="ok()">Save</button>
+                <button class="btn btn-outline-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
         </div>
     </script>
 
     <script type="text/ng-template" id="modalAddPackageItemImage.html">
-        <div class="modal-header">
-            <h3 class="modal-title">Add Package Item Image</h3>
-        </div>
-        <div class="modal-body">
-            <div>
-                Select Image File
+        <div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span class="fas fa-fw fa-image"></span>&nbsp;Add Package Item Image
+                </h5>
             </div>
-            <div>
-                <input id="file" type="file" class="form-control" />
-                <div>
-                    <!--<div id="fileProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>-->
-                    <progress id="fileProgress" style="display: none"></progress>
+            <div class="modal-body">
+                <div class="form-group">
+                    <span>Select Image File</span>
+                    <input id="file" type="file" class="form-control" />
                 </div>
-                
-                <br />
-                <span id="lblMessage" style="color: Green"></span>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button ng-if="isDone" class="btn btn-primary" type="button" ng-click="close()">Done</button>
+                <div class="form-group">
+                    <span>Progress</span>
+                    <div class="progress">
+                        <progress id="fileProgress" class="progress-bar progress-bar-striped" style="display: none; width: 100%; height:100px;"></progress>
+                    </div>
 
-            <button ng-if="isDone===false" class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button ng-if="isDone===false" class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                    <!--<div>
+                        <progress id="fileProgress1" class="progress-bar progress-bar-striped" style="display: none; width:100%;"></progress>
+                    </div>
+
+                    <span id="lblMessage" style="color: Green"></span>-->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!--<button ng-if="isDone" class="btn btn-primary" type="button" ng-click="close()">Done</button-->
+
+                <button ng-if="isDone===false" class="btn btn-outline-primary" type="button" ng-click="ok()">
+                    <span class="fas fa-fw fa-upload"></span>&nbsp;Upload
+                </button>
+                <button ng-if="isDone===false" class="btn btn-outline-warning" type="button" ng-click="cancel()">
+                    <span class="fas fa-fw fa-times"></span>&nbsp;Cancel
+                </button>
+            </div>
         </div>
     </script>
 </div>

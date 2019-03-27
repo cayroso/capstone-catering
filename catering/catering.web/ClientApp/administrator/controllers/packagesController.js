@@ -2,7 +2,7 @@
 import $ from 'jquery';
 import app from '../app';
 
-app.controller('packagesController', function ($http, $uibModal, toastr) {
+function controller1($http, $uibModal, toastr) {
     const vm = this;
 
     vm.selectedItem = null;
@@ -23,9 +23,30 @@ app.controller('packagesController', function ($http, $uibModal, toastr) {
             templateUrl: 'modalAddPackageItem.html',
             controller: 'ModalAddPackageItemInstanceCtrl',
             size: 'lg',
+            backdrop: 'static',
             resolve: {
                 packageId: function () {
                     return pkg.packageId;
+                }
+            }
+        });
+
+        modalInst.result.then(function (resp) {
+            vm.init();
+        });
+    };
+
+    vm.dlgOpenEditPackageItem = function (pkg) {
+        //debugger;
+        var modalInst = $uibModal.open({
+            animation: true,
+            templateUrl: 'modalEditPackageItem.html',
+            controller: 'ModalEditPackageItemInstanceCtrl',
+            size: 'lg',
+            backdrop: 'static',
+            resolve: {
+                pkg: function () {
+                    return pkg;
                 }
             }
         });
@@ -74,21 +95,31 @@ app.controller('packagesController', function ($http, $uibModal, toastr) {
     };
 
     vm.init();
-});
+}
 
-app.controller('ModalAddPackageItemInstanceCtrl', function ($scope, $http, $uibModalInstance, toastr, packageId) {
-    
+controller1.$inject = ['$http', '$uibModal', 'toastr'];
+
+app.controller('packagesController', controller1);
+
+
+function controller2($scope, $http, $uibModalInstance, toastr, packageId) {
+
     $scope.packageItem = {
         packageId: packageId,
         name: '',
-        description:''
+        description: ''
     };
 
     $scope.ok = function () {
-        $http.post('api/administrator/packages/item', $scope.packageItem)
+        $http.post('api/administrator/packages/itemAdd', $scope.packageItem)
             .then(function (resp) {
-                toastr.success('Package Item saved');
-                $uibModalInstance.close($scope.package);
+                toastr.success('Package Item saved', 'Add Item', {
+                    //tapToDismiss: true,
+                    timeOut: 0,
+                    onHidden: function () {
+                        $uibModalInstance.close($scope.package);
+                    }
+                });
 
             }, function (err) {
                 toastr.error('Error occured');
@@ -98,9 +129,42 @@ app.controller('ModalAddPackageItemInstanceCtrl', function ($scope, $http, $uibM
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
-});
+}
 
-app.controller('ModalAddPackageItemImageInstanceCtrl', function ($scope, $http, $uibModalInstance, toastr, packageItem) {
+controller2.$inject = ['$scope', '$http', '$uibModalInstance', 'toastr', 'packageId'];
+
+app.controller('ModalAddPackageItemInstanceCtrl', controller2);
+
+
+function controller2a($scope, $http, $uibModalInstance, toastr, pkg) {
+
+    $scope.packageItem = angular.copy(pkg);
+
+    $scope.ok = function () {
+        $http.post('api/administrator/packages/itemEdit', $scope.packageItem)
+            .then(function (resp) {
+                toastr.success('Package Item Updated', 'Edit', {
+                    timeOut: 0,
+                    onHidden: function () {
+                        $uibModalInstance.close($scope.package);
+                    }
+                });                
+            }, function (err) {
+                toastr.error('Error occured');
+            });
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+}
+
+controller2a.$inject = ['$scope', '$http', '$uibModalInstance', 'toastr', 'pkg'];
+
+app.controller('ModalEditPackageItemInstanceCtrl', controller2a);
+
+
+function controller3($scope, $http, $uibModalInstance, toastr, packageItem) {
     $scope.isDone = false;
     $scope.packageItem = packageItem;
 
@@ -129,19 +193,20 @@ app.controller('ModalAddPackageItemImageInstanceCtrl', function ($scope, $http, 
         });
 
         post.then(function (data, status) {
-            //debugger;
-            toastr.success('Image has been uploaded.', 'Image Uploaded');
-
-            //message.innerHTML = "<b>" + data + "</b> has been uploaded.";
-            //fileProgress.style.display = "none";
             $scope.isDone = true;
-            //$uibModalInstance.close($scope.package);
+            //debugger;
+            toastr.success('Image has been uploaded.', 'Image Uploaded', {
+                timeOut: 0,
+                onHidden: function () {
+                    $uibModalInstance.close();
+                }
+            });           
         }, function (data, status) {
             //debugger;
-            toastr.error(data.Message);
+            toastr.error(data.Message, 'Error', { timeOut: 0 });
         });
 
-        
+
     };
 
     $scope.cancel = function () {
@@ -150,4 +215,8 @@ app.controller('ModalAddPackageItemImageInstanceCtrl', function ($scope, $http, 
     $scope.close = function () {
         $uibModalInstance.close();
     };
-});
+}
+
+controller3.$inject = ['$scope', '$http', '$uibModalInstance', 'toastr', 'packageItem'];
+
+app.controller('ModalAddPackageItemImageInstanceCtrl', controller3);

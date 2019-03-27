@@ -77,11 +77,7 @@ namespace catering.web.Data
             modelBuilder.Entity<ShortMessage>().ToTable("ShortMessage");
         }
     }
-    public static class AppRoles
-    {
-        public const string Administrator = "administrator";
-        public const string Customer = "customer";
-    }
+
 
     public static class AppDbInitializer
     {
@@ -99,8 +95,8 @@ namespace catering.web.Data
 
             var users = new List<User>(new[]
             {
-                new User{ UserId="administrator", UserName="administrator",  Password="1234", FullName="Administrator", Email="admin@gmail.com", Mobile="1234", Phone="+639198262335" },
-                new User{ UserId="user1", UserName="user1",  Password="1234", FullName="Customer #1", Email="user1@gmail.com", Mobile="1234", Phone="+639198262335" },
+                new User{ UserId="administrator", UserName="administrator",  Password="1234", FullName="Administrator", Email="admin@gmail.com", Mobile="1234", Address="105 Main Street" },
+                new User{ UserId="user1", UserName="user1",  Password="1234", FullName="Customer #1", Email="user1@gmail.com", Mobile="1234", Address="105 Main Street" },
             });
 
             users.ForEach(p => context.Add(p));
@@ -141,7 +137,14 @@ namespace catering.web.Data
                     PackageId ="wedding",
                     Name ="Wedding",
                     Description ="Wedding Package",
-                    Images = new List<PackageImage>( menus.Take(5).ToArray())
+                    Images = new List<PackageImage>( menus.Take(5).ToArray()),
+                    //Items = new List<PackageItem>
+                    //{
+                    //    new PackageItem{ PackageId="wedding", PackageItemId="wedding-item1", Name="item1", Category="category1", Price=1.25, Type="type1" },
+                    //    new PackageItem{ PackageId="wedding", PackageItemId="wedding-item2", Name="item2", Category="category1", Price=1.25, Type="type1"},
+                    //    new PackageItem{ PackageId="wedding", PackageItemId="wedding-item3", Name="item3", Category="category1", Price=1.25, Type="type1"},
+                    //    new PackageItem{ PackageId="wedding", PackageItemId="wedding-item4", Name="item4", Category="category1", Price=1.25, Type="type1"},
+                    //}
                 },
                 new Package{
                     PackageId ="debut",
@@ -167,7 +170,7 @@ namespace catering.web.Data
             packages.ForEach(p => context.Add(p));
 
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.UtcNow.Date;
 
             var reservations = new List<Reservation>(new[] {
                 new Reservation
@@ -176,6 +179,8 @@ namespace catering.web.Data
                     UserId = "user1",
                     PackageId = "wedding",
 
+                     Title = "Past Reservation Title 1",
+                     Venue = "105 Main Street 1",
                     GuestCount = 500,
 
                     ChairCount = 100,
@@ -198,12 +203,13 @@ namespace catering.web.Data
 
                     FlowerPrice = 1000,
                     SoundSystemPrice = 6000,
-
+                    FixedCost = 3000,
+                    FixedLabor = 3000,
                     HasFlowers = true,
                     HasSoundSystem = true,
 
-                    DateStart = now.AddDays(-2) ,
-                    DateEnd = now.AddDays(-1),
+                    DateStart = now.AddDays(-2).Date ,
+                    DateEnd = now.AddDays(-1).Date,
                     ReservationStatus = ReservationStatus.Pending
                 },
                 new Reservation
@@ -211,7 +217,8 @@ namespace catering.web.Data
                     ReservationId = Guid.NewGuid().ToString(),
                     UserId = "user1",
                     PackageId = "debut",
-
+                     Title = "Reservation Title 2",
+                     Venue = "105 Main Street 2",
                     GuestCount = 500,
 
                     ChairCount = 100,
@@ -234,13 +241,15 @@ namespace catering.web.Data
 
                     FlowerPrice = 1000,
                     SoundSystemPrice = 6000,
+                    FixedCost = 3000,
+                    FixedLabor = 3000,
 
                     HasFlowers = true,
                     HasSoundSystem = true,
 
 
-                    DateStart = now.AddHours(8) ,
-                    DateEnd = now.AddHours(12),
+                    DateStart = now.AddHours(8).Date ,
+                    DateEnd = now.AddHours(12).Date,
                     ReservationStatus = ReservationStatus.PaymentAccepted
                 },
                 new Reservation
@@ -248,7 +257,8 @@ namespace catering.web.Data
                     ReservationId = Guid.NewGuid().ToString(),
                     UserId = "user1",
                     PackageId = "children-party",
-
+                     Title = "Reservation Title 3",
+                     Venue = "105 Main Street 3",
                     GuestCount = 500,
 
                     ChairCount = 100,
@@ -273,10 +283,12 @@ namespace catering.web.Data
                     FlowerPrice = 2000M,
                     HasSoundSystem = true,
                     SoundSystemPrice = 6000,
+                    FixedCost = 3000,
+                    FixedLabor = 3000,
 
 
-                    DateStart = now.AddDays(1).AddHours(7) ,
-                    DateEnd = now.AddDays(1).AddHours(10),
+                    DateStart = now.AddDays(1).AddHours(7).Date ,
+                    DateEnd = now.AddDays(1).AddHours(10).Date,
                     ReservationStatus = ReservationStatus.PaymentAccepted
                 },
                 new Reservation
@@ -284,7 +296,8 @@ namespace catering.web.Data
                     ReservationId = Guid.NewGuid().ToString(),
                     UserId = "user1",
                     PackageId = "corporate-event",
-
+                     Title = "Reservation Title 4",
+                     Venue = "105 Main Street 4",
                     GuestCount = 500,
 
                     ChairCount = 100,
@@ -309,9 +322,11 @@ namespace catering.web.Data
                     FlowerPrice = 2000M,
                     HasSoundSystem = true,
                     SoundSystemPrice = 6000,
+                    FixedCost = 3000,
+                    FixedLabor = 3000,
 
-                    DateStart = now.AddDays(1).AddHours(7) ,
-                    DateEnd = now.AddDays(1).AddHours(10),
+                    DateStart = now.AddDays(1).AddHours(7).Date ,
+                    DateEnd = now.AddDays(1).AddHours(10).Date,
                     ReservationStatus = ReservationStatus.PaymentAccepted
                 }
             });
@@ -324,13 +339,13 @@ namespace catering.web.Data
                 {
                     var sms = new ShortMessage
                     {
-                        ShortMessageId = $"shortmessge-{i}-{p.ReservationId}",
+                        ShortMessageId = $"{i}-{p.ReservationId}",
                         Subject = $"subject-{i}",
-                        Body = "body",
+                        Body = "The quick brown foxs the lazy dog.",
                         SentCount = 0,
                         DateCreated = DateTime.UtcNow,
                         DateSent = null,
-                        Receiver = $"receiver={i}",
+                        Receiver = $"+639198262335",
                         ReservationId = p.ReservationId,
                         Result = "",
                         Sender = $"sender={i}"
@@ -350,6 +365,8 @@ namespace catering.web.Data
                 Table = 135,
                 Flower = 1600,
                 SoundSystem = 6000,
+                FixedCost = 3000,
+                FixedLabor = 3000,
                 DateCreated = now
             };
 
@@ -359,122 +376,6 @@ namespace catering.web.Data
         }
     }
 
-    public class User
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string UserId { get; set; }
-
-        public string UserName { get; set; }
-        public string Password { get; set; }
-
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Mobile { get; set; }
-
-        public ICollection<UserRole> UserRoles { get; set; }
-        public ICollection<Reservation> Reservations { get; set; }
-    }
-
-    public class Role
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string RoleId { get; set; }
-
-        public string Name { get; set; }
-    }
-
-    public class UserRole
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string UserRoleId { get; set; }
-
-        public string UserId { get; set; }
-        public User User { get; set; }
-
-        public string RoleId { get; set; }
-        public Role Role { get; set; }
-    }
-
-    public class ItemPrice
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string ItemPriceId { get; set; }
-
-        public decimal Plate { get; set; }
-        public decimal Spoon { get; set; }
-        public decimal Fork { get; set; }
-        public decimal Glass { get; set; }
-        public decimal Chair { get; set; }
-        public decimal Table { get; set; }
-        public decimal Flower { get; set; }
-        public decimal SoundSystem { get; set; }
-
-        public DateTime DateCreated { get; set; }
-
-    }
-
-    public enum ReservationStatus
-    {
-        Pending = 0,
-        PaymentSent = 1,
-        PaymentAccepted = 2,
-        PaymentRejected = 3,
-        Complete = 4,
-        Cancelled = 5
-    }
-
-
-
-    /// <summary>
-    /// Wedding, Debut, Children Party, Corporate Event
-    /// </summary>
-    public class Package
-    {
-        public Package()
-        {
-            Items = new List<PackageItem>();
-        }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string PackageId { get; set; }
-
-        public string Name { get; set; }
-        public string Description { get; set; }
-
-        public virtual ICollection<PackageItem> Items { get; set; }
-        public virtual ICollection<PackageImage> Images { get; set; }
-    }
-
-    public class PackageItem
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string PackageItemId { get; set; }
-
-        public string PackageId { get; set; }
-        public virtual Package Package { get; set; }
-
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public string Type { get; set; }
-        public double Price { get; set; }
-
-    }
-
-    public class PackageImage
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string PackageImageId { get; set; }
-
-        public string PackageId { get; set; }
-        public virtual Package Package { get; set; }
-
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ImageUrl { get; set; }
-
-        public double Price { get; set; }
-    }
 }
 
 

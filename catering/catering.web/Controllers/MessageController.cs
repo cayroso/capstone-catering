@@ -25,17 +25,33 @@ namespace catering.web.Controllers
         [HttpGet()]
         public async Task<IActionResult> Get()
         {
-            var items = await _appDbContext
+            var data = await _appDbContext
                 .ShortMessages
-                //.Where(p => p.DateSent == null)
+                .Include(p => p.Reservation)
+                    .ThenInclude(p => p.User)
+                .OrderByDescending(p => p.DateCreated)
                 .ToListAsync();
 
-            return Ok(items);
+            return Ok(data);
         }
 
-        
-        [HttpPost("sent/{id}")]
-        public async Task<IActionResult> Sent(string id)
+        [HttpGet("forSend")]
+        public async Task<IActionResult> GetForSend()
+        {
+            var data = await _appDbContext
+                .ShortMessages
+                .Include(p => p.Reservation)
+                    .ThenInclude(p => p.User)
+                .OrderByDescending(p => p.DateCreated)
+                .Where(p=>p.DateSent == null)
+                .ToListAsync();
+
+            return Ok(data);
+        }
+
+
+        [HttpPost("sent")]
+        public async Task<IActionResult> Sent1(string id)
         {
             var data = await _appDbContext
                 .ShortMessages
@@ -55,7 +71,36 @@ namespace catering.web.Controllers
 
             await _appDbContext.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { message= $"sms: {data.ShortMessageId} sent"});
+        }
+
+        /// <summary>
+        /// SHOULD BE HTTPPOST, BUT XAMARIN ANDROID IS CHOKING
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpGet("sent2")]
+        public async Task<IActionResult> Sent2(string id)
+        {
+            var data = await _appDbContext
+                .ShortMessages
+                .FirstOrDefaultAsync(p => p.ShortMessageId == id);
+
+            if (data == null)
+            {
+                return NotFound();
+            }
+
+            data.DateSent = DateTime.UtcNow;
+            data.Result += $"Sent Date: {data.DateSent.ToString()};";
+
+            data.SentCount++;
+
+            _appDbContext.Update(data);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok(new { message = $"sms [{data.ShortMessageId}] sent" });
         }
 
         [HttpPost("resend/{id}")]
@@ -71,7 +116,7 @@ namespace catering.web.Controllers
             }
 
             data.DateSent = null;
-            data.Result += $"Resend Date: {data.DateSent.ToString()}\n";
+            data.Result += $"Resend;";
 
             _appDbContext.Update(data);
 
@@ -79,5 +124,10 @@ namespace catering.web.Controllers
 
             return Ok();
         }
+    }
+
+    public class Sent2
+    {
+        public string Id { get; set; }
     }
 }

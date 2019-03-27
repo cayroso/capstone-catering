@@ -1,0 +1,112 @@
+﻿<div ng-controller="pricingController as $ctrl">
+    <h4>Messages</h4>
+    <hr />
+    <button ng-click="$ctrl.init()" class="btn btn-sm btn-outline-info"><span class="fas fa-fw fa-sync"></span> Refresh</button>
+    <button ng-click="$ctrl.edit()" ng-if="$ctrl.onEdit === false" class="btn btn-sm btn-outline-warning"><span class="fas fa-fw fa-edit"></span> Edit</button>
+
+    <button ng-click="$ctrl.save()" ng-if="$ctrl.onEdit === true" class="btn btn-sm btn-outline-warning"><span class="fas fa-fw fa-save"></span> Save</button>
+    <hr />
+
+    <!--display mode-->
+    <div class="row" ng-if="$ctrl.onEdit === false">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <b>Spoon</b>
+                <span class="form-control" readonly>{{$ctrl.item.spoon | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Fork</b>
+                <span class="form-control" readonly>{{$ctrl.item.fork | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Plate</b>
+                <span class="form-control" readonly>{{$ctrl.item.plate | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Glass</b>
+                <span class="form-control" readonly>{{$ctrl.item.glass | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Table</b>
+                <span class="form-control" readonly>{{$ctrl.item.table | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Chair</b>
+                <span class="form-control" readonly>{{$ctrl.item.chair | number:'2'}}</span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <b>Flower</b>
+                <span class="form-control" readonly>{{$ctrl.item.flower | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Sound System</b>
+                <span class="form-control" readonly>{{$ctrl.item.soundSystem | number:'2'}}</span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <b>Fixed Cost</b>
+                <span class="form-control" readonly>{{$ctrl.item.fixedCost | number:'2'}}</span>
+            </div>
+            <div class="form-group">
+                <b>Fixed Labor</b>
+                <span class="form-control" readonly>{{$ctrl.item.fixedLabor | number:'2'}}</span>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--edit mode-->
+    <div class="row" ng-if="$ctrl.onEdit === true">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <b>Spoon</b>
+                <input ng-model="$ctrl.item.spoon" type="number" class="form-control" />
+            </div>
+            <div class="form-group">
+                <b>Fork</b>
+                <input ng-model="$ctrl.item.fork" type="number" class="form-control" />
+            </div>
+            <div class="form-group">
+                <b>Plate</b>
+                <input ng-model="$ctrl.item.plate" type="number" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <b>Glass</b>
+                <input ng-model="$ctrl.item.glass" type="number" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <b>Table</b>
+                <input ng-model="$ctrl.item.table" type="number" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <b>Chair</b>
+                <input ng-model="$ctrl.item.chair" type="number" class="form-control"/>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <b>Flower</b>
+                <input ng-model="$ctrl.item.flower" type="number" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <b>Sound System</b>
+                <input ng-model="$ctrl.item.soundSystem" type="number" class="form-control"/>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <b>Fixed Cost</b>
+                <input ng-model="$ctrl.item.fixedCost" type="number" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <b>Fixed Labor</b>
+                <input ng-model="$ctrl.item.fixedLabor" type="number" class="form-control"/>
+            </div>
+        </div>
+
+    </div>
+</div>
