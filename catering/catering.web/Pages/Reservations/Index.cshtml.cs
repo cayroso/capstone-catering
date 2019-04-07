@@ -58,6 +58,7 @@ namespace catering.web.Pages.Reservations
             var items = await _appDbContext
                 .Reservations
                 .Include(p => p.Package)
+                .Where(p=> p.ReservationStatus != ReservationStatus.Cancelled && p.ReservationStatus != ReservationStatus.Complete)
                 .ToListAsync();
 
             items.ForEach(p =>
@@ -100,15 +101,16 @@ namespace catering.web.Pages.Reservations
                dateEnd = dateEnd.AddSeconds(-1);
             }
 
-            //var startUtc = dateStart.UtcDateTime;
-            //var endUtc = dateEnd.UtcDateTime;
+            var startUtc = dateStart.Date;
+            var endUtc = startUtc.AddDays(1).AddSeconds(-1);
 
             var conflicts = _appDbContext.Reservations
                             .Where(p =>
-                                p.ReservationStatus != ReservationStatus.Cancelled
+                                (p.ReservationStatus != ReservationStatus.Cancelled && p.ReservationStatus != ReservationStatus.Complete)
                                 &&
-                                ((dateStart >= p.DateStart && dateStart <= p.DateEnd) ||
-                                (dateEnd >= p.DateStart && dateEnd <= p.DateEnd))
+                                (
+                                    (p.DateStart >= startUtc && p.DateStart <= endUtc) || (p.DateEnd >= startUtc && p.DateEnd <= endUtc)
+                                )
                                 )
                             .ToList();
 

@@ -29,6 +29,21 @@ function controller($http, toastr) {
             });
 
     };
+
+    vm.markAsSent = function (id) {
+        $http.post(`api/message/sent/?id=${id}`)
+            .then(function (resp) {
+                toastr.success('Message marked as Sent', 'Mark As Sent', {
+                    timeOut: 0, onHidden: function () {
+                        vm.init();
+                    }
+                });
+            }, function (err) {
+                toastr.error('Error occured', 'Resend', { timeOut: 0 });
+            });
+
+    };
+
     vm.init = function () {
         $http.get('api/message')
             .then(function (resp) {

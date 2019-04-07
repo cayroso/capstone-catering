@@ -43,8 +43,7 @@ namespace catering.android
 
             timestamper = new UtcTimestamper();
             handler = new Handler();
-
-            // This Action is only for demonstration purposes.
+            
             runnable = new Action(async () =>
             {
                 if (timestamper == null)
@@ -53,15 +52,11 @@ namespace catering.android
                 }
                 else
                 {
-                    //  TODO:
-                    //  get all the pending sms
-                    //  then send the sms,
-                    //  then update
-
+                    //  TODO get all the pending sms, then send the sms, then update
                     var items = new List<ShortMessage>();
 
                     //var url = "http://104.215.158.168/catering/";
-                    var url = "http://192.168.0.30/catering/";
+                    var url = "http://batangas.southeastasia.cloudapp.azure.com/catering/";
                     using (var client = new HttpClient())
                     {
                         // send a GET request  
@@ -73,11 +68,8 @@ namespace catering.android
 
                     using (var post = new HttpClient(new NativeMessageHandler()))
                     {
-                        //post.DefaultRequestHeaders.Accept.Clear();
-                        //post.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));;
-                        //post.DefaultRequestHeaders.Add("Accept", "application/text");
                         foreach (var item in items.Where(p => p.DateSent == null))
-                        {
+                         {
                             try
                             {
                                 //  SEND SMS
@@ -85,14 +77,11 @@ namespace catering.android
                                 var piDelivered = PendingIntent.GetBroadcast(this, 0, new Intent("SMS_DELIVERED"), 0);
 
                                 _smsManager.SendTextMessage(item.Receiver, null, item.Body, piSent, piDelivered);
-
-
+                                
                                 var uri = $"{url}api/message/sent2/?id={item.ShortMessageId}";
-
                                 var resp = await post.GetAsync(new Uri(uri));
 
                                 //resp.EnsureSuccessStatusCode();
-
                                 Log.Debug(TAG, item.Body);
                             }
                             catch(Exception ex)

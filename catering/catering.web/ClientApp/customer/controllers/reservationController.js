@@ -3,7 +3,7 @@ import $ from 'jquery';
 import app from '../app';
 import moment from 'moment';
 
-app.controller('reservationController', function ($http, toastr) {
+function controller($http, toastr) {
     var vm = this;
 
     var n = new Date();
@@ -45,11 +45,11 @@ app.controller('reservationController', function ($http, toastr) {
         var s1 = vm.formData.startDate;
         var t1 = vm.formData.startTime;
         var start = moment(new Date(s1.getFullYear(), s1.getMonth(), s1.getDate(), t1.getHours(), t1.getMinutes(), 0, 0)).utc().valueOf();
-        
+
         var s2 = vm.formData.startDate;
         var t2 = vm.formData.startTime;
-        var end  = moment(new Date(s2.getFullYear(), s2.getMonth(), s2.getDate(), t2.getHours(), t2.getMinutes(), 0, 0)).utc().valueOf();
-        
+        var end = moment(new Date(s2.getFullYear(), s2.getMonth(), s2.getDate(), t2.getHours(), t2.getMinutes(), 0, 0)).utc().valueOf();
+
         //var start = moment(vm.formData.startDate.getUTCDate())
         //    .add(vm.formData.startTime.getHours(), 'hours')
         //    .add(vm.formData.startTime.getMinutes(), 'minutes')
@@ -70,7 +70,7 @@ app.controller('reservationController', function ($http, toastr) {
 
         $http.get(url)
             .then(function (resp) {
-                toastr.info('Dates are Available', 'Succes', { timeOut: 0 });
+                toastr.info('Dates are Available: ' + resp.data.message, 'Succes', { timeOut: 0 });
             }, function (err) {
                 toastr.warning(err.data, 'Failed', { timeOut: 0 });
 
@@ -284,4 +284,8 @@ app.controller('reservationController', function ($http, toastr) {
         });
 
 
-});
+}
+
+controller.$inject = ['$http', 'toastr'];
+
+app.controller('reservationController', controller);

@@ -263,7 +263,7 @@ namespace catering.web.Migrations
                 columns: table => new
                 {
                     ShortMessageId = table.Column<string>(nullable: false),
-                    ReservationId = table.Column<string>(nullable: false),
+                    ReservationId = table.Column<string>(nullable: true),
                     Sender = table.Column<string>(nullable: true),
                     Receiver = table.Column<string>(nullable: true),
                     Subject = table.Column<string>(nullable: true),
@@ -281,7 +281,7 @@ namespace catering.web.Migrations
                         column: x => x.ReservationId,
                         principalTable: "Reservation",
                         principalColumn: "ReservationId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

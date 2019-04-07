@@ -32,7 +32,7 @@
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <a class="btn btn-sm btn-outline-light" href="@Url.Content("~/")Account/Login">
-                                <span class="fa fa-fw fa-sign-in"></span>&nbsp;Sign In
+                                <span class="fa fa-fw fa-sign-in-alt"></span>&nbsp;Sign In
                             </a>
                             <text>&nbsp;</text>
                             <a class="btn btn-sm btn-outline-light" href="@Url.Content("~/")Account/Register">
@@ -41,13 +41,17 @@
                         }
                         else
                         {
+                            <a class="btn btn-sm btn-outline-light" href="@Url.Content("~/")account/changepassword">
+                                <span class="fa fa-fw fa-user-edit"></span>&nbsp;Change password
+                            </a>
+
                             <form method="post" action="@Url.Content("~/")Account/Logout">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-sm btn-outline-light">
-                                    <span class="fa fa-fw fa-sign-out"></span>&nbsp;Sign Out
+                                    <span class="fa fa-fw fa-sign-out-alt"></span>&nbsp;Sign Out
                                 </button>
                             </form>
-                            
+
                         }
                     </div>
                 </div>

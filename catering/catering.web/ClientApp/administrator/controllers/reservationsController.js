@@ -3,18 +3,36 @@ import 'jquery';
 import app from '../app';
 import moment from 'moment';
 
-app.controller('reservationsController', function ($http, toastr) {
+function reservationsController($http, $uibModal, toastr) {
     const vm = this;
 
     vm.selectedItem = null;
 
     vm.setSelectedItem = function (item) {
         if (item === vm.selectedItem) {
-            vm.selectedItem = null;
+            //vm.selectedItem = null;
             return;
         }
 
         vm.selectedItem = item;
+    };
+
+    vm.viewReservation = function () {
+
+        $uibModal.open({
+            animation: true,
+            //appendTo: angular.element(document).find('aside'),
+            templateUrl: 'modalViewReservation.html',
+            controller: 'viewReservationModalController',
+            size: 'lg',
+            resolve: {
+                reservation: function () {
+                    //debugger;
+                    return vm.selectedItem;
+                }
+            }
+        });
+
     };
 
     vm.completeReservation = function () {
@@ -37,11 +55,30 @@ app.controller('reservationsController', function ($http, toastr) {
             });
     };
 
+    vm.acceptPayment = function () {
+        $http.post(`api/administrator/reservations/${vm.selectedItem.reservationId}/accept-payment`)
+            .then(function (resp) {
+                toastr.success('Reservation payment was accepted');
+                vm.init();
+            }, function (err) {
+                toastr.success('Error Occured');
+            });
+    };
+
+    vm.rejectPayment = function () {
+        $http.post(`api/administrator/reservations/${vm.selectedItem.reservationId}/reject-payment`)
+            .then(function (resp) {
+                toastr.success('Reservation payment was rejected');
+                vm.init();
+            }, function (err) {
+                toastr.success('Error Occured');
+            });
+    };
 
     vm.init = function () {
         $http.get('api/administrator/reservations')
             .then(function (resp) {
-                vm.items = resp.data;          
+                vm.items = resp.data;
                 for (var i = 0; i < vm.items.length; i++) {
                     var item = vm.items[i];
 
@@ -71,7 +108,29 @@ app.controller('reservationsController', function ($http, toastr) {
             });
     };
 
-   
+
     vm.init();
-    
-});
+
+}
+
+reservationsController.$inject = ['$http', '$uibModal', 'toastr'];
+
+app.controller('reservationsController', reservationsController);
+
+
+function viewReservationModalController($scope, $uibModalInstance, toastr, reservation) {
+
+    $scope.reservation = angular.copy(reservation);
+
+    $scope.ok = function () {
+        $uibModalInstance.close();
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+}
+
+viewReservationModalController.$inject = ['$scope', '$uibModalInstance', 'toastr', 'reservation'];
+
+app.controller('viewReservationModalController', viewReservationModalController);

@@ -3,6 +3,10 @@
         <h3 class="modal-title">Payment Details</h3>
     </div>
     <div class="modal-body">
+        <div class="form-group">
+            <b>Amount Due</b>
+            <input ng-model="payment.amountPaid" class="form-control" />
+        </div>
         Amount Paid: <input ng-model="payment.amountPaid" />
         Reference Number: <input ng-model="payment.referenceNumber" />
     </div>

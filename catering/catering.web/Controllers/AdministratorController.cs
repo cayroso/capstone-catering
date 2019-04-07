@@ -55,10 +55,10 @@ namespace catering.web.Controllers
             var dashboard = new DashboardInfo
             {
                 Reservations = items,
-                Today = items.Where(p => p.DateStart.Date == now || p.DateEnd.Date == now).ToList(),
+                Today = items.Where(p => (p.DateStart.Date == now || p.DateEnd.Date == now) && p.ReservationStatus == ReservationStatus.PaymentAccepted).ToList(),
                 Upcoming = items.Where(p =>
-                    p.DateStart.Date > now
-                    && p.DateEnd.Date > now
+                    p.DateStart.Date > now && p.DateEnd.Date > now
+                    && p.ReservationStatus != ReservationStatus.Cancelled
                     && (p.ReservationStatus == ReservationStatus.Pending
                         || p.ReservationStatus != ReservationStatus.PaymentAccepted
                         || p.ReservationStatus != ReservationStatus.PaymentSent
@@ -67,6 +67,7 @@ namespace catering.web.Controllers
                 Overdue = items.Where(p =>
                     p.DateStart.Date < now
                     && p.DateEnd.Date < now
+                    && p.ReservationStatus != ReservationStatus.Cancelled
                     && (p.ReservationStatus == ReservationStatus.Pending
                         || p.ReservationStatus != ReservationStatus.PaymentAccepted
                         || p.ReservationStatus != ReservationStatus.PaymentSent
@@ -147,6 +148,7 @@ namespace catering.web.Controllers
         {
             var data = await _appDbContext
                 .Reservations
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.ReservationId == id);
 
             if (data == null)
@@ -170,6 +172,7 @@ namespace catering.web.Controllers
         {
             var data = await _appDbContext
                 .Reservations
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.ReservationId == id);
 
             if (data == null)
@@ -192,6 +195,7 @@ namespace catering.web.Controllers
         {
             var data = await _appDbContext
                 .Reservations
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.ReservationId == id);
 
             if (data == null)

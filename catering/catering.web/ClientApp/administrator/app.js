@@ -4,10 +4,10 @@ import 'angular-ui-bootstrap/dist/ui-bootstrap-tpls';
 
 const app = angular.module('app', [require('angular-animate'), require('angular-toastr'), 'ui.bootstrap']);
 
-app.controller('mainController', function () {
+function controller() {
     const vm = this;
     const pagePrefix = 'app/clientapp/administrator/templates/';
-    vm.page = `${pagePrefix}/pricing.html`;
+    vm.page = `${pagePrefix}/reservations.html`;
 
     vm.setPage = function (page, event) {
         //debugger;
@@ -17,6 +17,10 @@ app.controller('mainController', function () {
         event.preventDefault();
     };
 
-});
+}
+
+controller.$inject = [];
+
+app.controller('mainController', controller);
 
 export default app;

@@ -71,7 +71,7 @@ namespace catering.web.Data
                 .HasOne(p => p.Reservation)
                 .WithMany(p => p.ShortMessages)
                 .HasForeignKey(p => p.ReservationId)
-                .IsRequired();
+                .IsRequired(false);
 
 
             modelBuilder.Entity<ShortMessage>().ToTable("ShortMessage");
@@ -95,8 +95,8 @@ namespace catering.web.Data
 
             var users = new List<User>(new[]
             {
-                new User{ UserId="administrator", UserName="administrator",  Password="1234", FullName="Administrator", Email="admin@gmail.com", Mobile="1234", Address="105 Main Street" },
-                new User{ UserId="user1", UserName="user1",  Password="1234", FullName="Customer #1", Email="user1@gmail.com", Mobile="1234", Address="105 Main Street" },
+                new User{ UserId="administrator", UserName="administrator",  Password="1234", FullName="Administrator", Email="admin@gmail.com", Mobile="09198262335", Address="105 Main Street" },
+                new User{ UserId="user1", UserName="user1",  Password="1234", FullName="Customer #1", Email="user1@gmail.com", Mobile="+639198262335", Address="105 Main Street" },
             });
 
             users.ForEach(p => context.Add(p));
@@ -179,7 +179,7 @@ namespace catering.web.Data
                     UserId = "user1",
                     PackageId = "wedding",
 
-                     Title = "Past Reservation Title 1",
+                     Title = "Past Reservation, Spanning 2 days",
                      Venue = "105 Main Street 1",
                     GuestCount = 500,
 
@@ -209,7 +209,7 @@ namespace catering.web.Data
                     HasSoundSystem = true,
 
                     DateStart = now.AddDays(-2).Date ,
-                    DateEnd = now.AddDays(-1).Date,
+                    DateEnd = now.AddDays(-1).Date.AddHours(2),
                     ReservationStatus = ReservationStatus.Pending
                 },
                 new Reservation
@@ -217,7 +217,7 @@ namespace catering.web.Data
                     ReservationId = Guid.NewGuid().ToString(),
                     UserId = "user1",
                     PackageId = "debut",
-                     Title = "Reservation Title 2",
+                     Title = "Reservation Today",
                      Venue = "105 Main Street 2",
                     GuestCount = 500,
 
@@ -249,7 +249,7 @@ namespace catering.web.Data
 
 
                     DateStart = now.AddHours(8).Date ,
-                    DateEnd = now.AddHours(12).Date,
+                    DateEnd = now.AddHours(12).Date.Date.AddHours(2),
                     ReservationStatus = ReservationStatus.PaymentAccepted
                 },
                 new Reservation
@@ -257,7 +257,7 @@ namespace catering.web.Data
                     ReservationId = Guid.NewGuid().ToString(),
                     UserId = "user1",
                     PackageId = "children-party",
-                     Title = "Reservation Title 3",
+                     Title = "Reservation For Tomorrow 1",
                      Venue = "105 Main Street 3",
                     GuestCount = 500,
 
@@ -288,7 +288,7 @@ namespace catering.web.Data
 
 
                     DateStart = now.AddDays(1).AddHours(7).Date ,
-                    DateEnd = now.AddDays(1).AddHours(10).Date,
+                    DateEnd = now.AddDays(1).AddHours(10).Date.Date.AddHours(2),
                     ReservationStatus = ReservationStatus.PaymentAccepted
                 },
                 new Reservation
@@ -296,7 +296,7 @@ namespace catering.web.Data
                     ReservationId = Guid.NewGuid().ToString(),
                     UserId = "user1",
                     PackageId = "corporate-event",
-                     Title = "Reservation Title 4",
+                     Title = "Reservation For Tomorrow 2",
                      Venue = "105 Main Street 4",
                     GuestCount = 500,
 
@@ -326,7 +326,7 @@ namespace catering.web.Data
                     FixedLabor = 3000,
 
                     DateStart = now.AddDays(1).AddHours(7).Date ,
-                    DateEnd = now.AddDays(1).AddHours(10).Date,
+                    DateEnd = now.AddDays(1).AddHours(10).Date.Date.AddHours(2),
                     ReservationStatus = ReservationStatus.PaymentAccepted
                 }
             });

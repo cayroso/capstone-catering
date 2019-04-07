@@ -6,7 +6,7 @@ import { setInterval } from 'timers';
 import moment from 'moment';
 import { debug } from 'util';
 
-app.controller('myReservationsController', function ($http, toastr, $uibModal, $timeout) {
+function myReservationsController($http, toastr, $uibModal, $timeout) {
     const vm = this;
 
     vm.selectedItem = null;
@@ -21,7 +21,7 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
         vm.selectedItem = item;
     };
 
-    vm.setPayment = function() {
+    vm.setPayment = function () {
 
         var modalInst = $uibModal.open({
             animation: true,
@@ -29,8 +29,9 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
             templateUrl: 'modalPayment.html',
             controller: 'ModalInstanceCtrl',
             size: 'lg',
+            backdrop: 'static',
             resolve: {
-                paymentDetail: function() {
+                paymentDetail: function () {
                     return {
                         totalPrice: vm.selectedItem.totalPrice,
                         amountPaid: vm.selectedItem.amountPaid,
@@ -112,14 +113,15 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
             size: 'lg',
             resolve: {
                 reservation: function () {
+                    //debugger;
                     return vm.selectedItem;
                 }
             }
         });
-        
+
     };
 
-    vm.cancelReservation = function() {
+    vm.cancelReservation = function () {
         var resp = confirm('Are you sure you want to cancel this reservation?');
 
         if (!resp) {
@@ -139,7 +141,7 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
         $http.get('api/customer/reservations')
             .then(function (resp) {
                 vm.items = resp.data;
-                
+
                 for (var i = 0; i < vm.items.length; i++) {
                     var item = vm.items[i];
 
@@ -173,17 +175,36 @@ app.controller('myReservationsController', function ($http, toastr, $uibModal, $
 
 
     getReservations();
-});
+}
 
-app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, $filter, toastr, paymentDetail) {
+myReservationsController.$inject = ['$http', 'toastr', '$uibModal', '$timeout'];
+
+app.controller('myReservationsController', myReservationsController);
+
+
+function ModalInstanceCtrl($scope, $uibModalInstance, $filter, toastr, paymentDetail) {
 
     $scope.payment = angular.copy(paymentDetail);
     //$scope.payment.totalPrice = Number.pars $filter('number')($scope.payment.totalPrice, 2);
     $scope.payment.amountPaid = $scope.payment.totalPrice;
     $scope.ok = function () {
-        if ($scope.payment.amountPaid < $scope.payment.totalPrice) {
-            toastr.warning('Amount Paid is less that Total price', 'Really?');
-            return;
+        var paymentType = $scope.payment.paymentType;
+
+        if (paymentType === 1) {
+            if ($scope.payment.amountPaid < $scope.payment.totalPrice) {
+                toastr.warning('Amount Paid is less that Total price', 'Really?');
+                return;
+            }
+        }
+        else {
+            //  get the 30% of the total price;
+            //  check if the amount paid is >= to that amount
+
+            var dp = $scope.payment.totalPrice * 0.30;
+            if ($scope.payment.amountPaid < dp) {
+                toastr.warning('Amount Paid is less than the 30% of total price', 'Really?');
+                return;
+            }
         }
         $uibModalInstance.close($scope.payment);
     };
@@ -191,23 +212,44 @@ app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, $filter
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
-});
 
-app.controller('viewReservationModalController', function ($scope, $uibModalInstance, toastr, reservation) {
+    $scope.paymentTypeChanged = function () {
+        var payment = $scope.payment.paymentType;
+        var dp = $scope.payment.totalPrice;
+
+        if (payment === "2") {
+            dp = dp * 0.3;
+        }
+
+        $scope.suggestedPaymentAmount = dp;
+    };
+
+}
+
+ModalInstanceCtrl.$inject = ['$scope', '$uibModalInstance', '$filter', 'toastr', 'paymentDetail'];
+
+app.controller('ModalInstanceCtrl', ModalInstanceCtrl);
+
+
+function viewReservationModalController($scope, $uibModalInstance, toastr, reservation) {
 
     $scope.reservation = angular.copy(reservation);
-
-    $scope.ok = function () {        
+    
+    $scope.ok = function () {
         $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
-});
+}
+
+viewReservationModalController.$inject = ['$scope', '$uibModalInstance', 'toastr', 'reservation'];
+
+app.controller('viewReservationModalController', viewReservationModalController);
 
 
-app.controller('ModalInstanceCtrlCreditCardPayment', function ($scope, $uibModalInstance, $filter, $http, toastr, paymentDetail) {
+function ModalInstanceCtrlCreditCardPayment($scope, $uibModalInstance, $filter, $http, toastr, paymentDetail) {
 
     $scope.payment = angular.copy(paymentDetail);
     //$scope.payment.totalPrice = Number.pars $filter('number')($scope.payment.totalPrice, 2);
@@ -224,10 +266,10 @@ app.controller('ModalInstanceCtrlCreditCardPayment', function ($scope, $uibModal
         $uibModalInstance.dismiss('cancel');
     };
 
-   
+
 
     $scope.init = function () {
-        
+
         var stripe = Stripe('pk_test_yzpzINlD1C0NHX8O1Qjaos6o');
         var elements = stripe.elements();
 
@@ -235,7 +277,7 @@ app.controller('ModalInstanceCtrlCreditCardPayment', function ($scope, $uibModal
             base: {
                 // Add your base input styles here. For example:
                 fontSize: '16px',
-                color: "#32325d",
+                color: "#32325d"
             }
         };
 
@@ -272,13 +314,13 @@ app.controller('ModalInstanceCtrlCreditCardPayment', function ($scope, $uibModal
         });
 
         function stripeTokenHandler(token) {
-            debugger;
+            //debugger;
             $http.post(`api/customer/reservations/pay-with-stripe/?token=${token.id}&amount=${$scope.payment.totalPrice}&reservationId=${$scope.payment.reservationId}`)
                 .then(function (resp) {
-                    debugger;
+                    //debugger;
                 }, function (err) {
-                    debugger;
-                })
+                    alert(JSON.stringify(err));
+                });
             //// Insert the token ID into the form so it gets submitted to the server
             //var form = document.getElementById('payment-form');
             //var hiddenInput = document.createElement('input');
@@ -291,4 +333,8 @@ app.controller('ModalInstanceCtrlCreditCardPayment', function ($scope, $uibModal
             //form.submit();
         }
     };
-});
+}
+
+ModalInstanceCtrlCreditCardPayment.$inject = ['$scope', '$uibModalInstance', '$filter', '$http', 'toastr', 'paymentDetail'];
+
+app.controller('ModalInstanceCtrlCreditCardPayment', ModalInstanceCtrlCreditCardPayment);

@@ -3,7 +3,7 @@ import $ from 'jquery';
 import app from '../app';
 import moment from 'moment';
 
-app.controller('dashboardController', function ($http, toastr) {
+function dashboardController($http, toastr) {
     const vm = this;
 
 
@@ -26,20 +26,29 @@ app.controller('dashboardController', function ($http, toastr) {
 
                 var overDue = [];
                 var upcoming = [];
+                var complete = [];
+                var cancelled = [];
 
                 var now = moment();
-                
+
                 for (let i = 0; i < resp.data.reservations.length; i++) {
                     let item = resp.data.reservations[i];
-                    
+
                     var evt = {
                         title: item.title,
                         start: moment(item.dateStart),
                         end: moment(item.dateEnd)
                     };
 
+
                     if (evt.end < now) {
                         overDue.push(evt);
+                    }
+                    else if (item.reservationStatus === 4) {
+                        complete.push(evt);
+                    }
+                    else if (item.reservationStatus === 5) {
+                        cancelled.push(evt);
                     }
                     else {
                         upcoming.push(evt);
@@ -59,8 +68,17 @@ app.controller('dashboardController', function ($http, toastr) {
                         {
                             events: upcoming,
                             color: 'green'
+                        },
+                        {
+                            events: complete,
+                            color: 'blue'
+                        },
+                        {
+
+                            events: cancelled,
+                            color: 'black'
                         }
-                    ]                    
+                    ]
                 });
             }, function (err) {
                 toastr.error('error occured');
@@ -68,5 +86,9 @@ app.controller('dashboardController', function ($http, toastr) {
     };
 
     vm.init();
-    
-});
+
+}
+
+dashboardController.$inject = ['$http', 'toastr'];
+
+app.controller('dashboardController', dashboardController);

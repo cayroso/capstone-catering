@@ -2,7 +2,7 @@
 import 'jquery';
 import app from '../app';
 
-app.controller('customersController', function ($http, toastr) {
+function customersController($http, toastr) {
     const vm = this;
 
     vm.selectedItem = null;
@@ -26,4 +26,8 @@ app.controller('customersController', function ($http, toastr) {
     };
 
     vm.init();
-});
+}
+
+customersController.$inject = ['$http', 'toastr'];
+
+app.controller('customersController', customersController);

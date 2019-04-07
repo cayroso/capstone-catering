@@ -265,8 +265,7 @@ namespace catering.web.Migrations
 
                     b.Property<string>("Receiver");
 
-                    b.Property<string>("ReservationId")
-                        .IsRequired();
+                    b.Property<string>("ReservationId");
 
                     b.Property<string>("Result");
 
@@ -370,8 +369,7 @@ namespace catering.web.Migrations
                 {
                     b.HasOne("catering.web.Data.Reservation", "Reservation")
                         .WithMany("ShortMessages")
-                        .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ReservationId");
                 });
 
             modelBuilder.Entity("catering.web.Data.UserRole", b =>

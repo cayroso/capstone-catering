@@ -31,6 +31,7 @@ namespace catering.web.Pages.Home
             var items = await _appDbContext
                 .Reservations
                 .Include(p => p.Package)
+                .Where(p => p.ReservationStatus != ReservationStatus.Cancelled && p.ReservationStatus != ReservationStatus.Complete)
                 .ToListAsync();
 
             items.ForEach(p =>

@@ -3,7 +3,7 @@
 import app from '../app';
 //const signalR = require('@aspnet/signalr');
 
-app.controller('mainController', function (toastr) {
+function mainController(toastr) {
     const vm = this;
 
     //vm.Ok = function () {
@@ -40,4 +40,8 @@ app.controller('mainController', function (toastr) {
     }
 
     init();
-});
+}
+
+mainController.$inject = ['toastr'];
+
+app.controller('mainController', mainController);

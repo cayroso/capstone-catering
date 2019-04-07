@@ -2,8 +2,7 @@
 import $ from 'jquery';
 import app from '../app';
 
-
-app.controller('indexController', function ($http) {
+function indexController($http) {
     const vm = this;
 
 
@@ -28,7 +27,7 @@ app.controller('indexController', function ($http) {
                         title: item.title,
                         start: $.fullCalendar.moment(item.dateStart),
                         end: $.fullCalendar.moment(item.dateEnd),
-                        
+
                     });
                 }
 
@@ -47,5 +46,9 @@ app.controller('indexController', function ($http) {
 
 
     init();
-});
+}
+
+indexController.$inject = ['$http'];
+
+app.controller('indexController', indexController);
 

@@ -5,7 +5,7 @@
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th ng-if="$ctrl.selectedItem"></th>
+                    <th ng-if="$ctrl.selectedItem">Action(s)</th>
                     <th>Status</th>
                     <th>Package</th>
                     <th>Title</th>
@@ -18,17 +18,6 @@
                     <th>Paid</th>
                     <th>Total Price</th>
                     <th>Reference Number</th>
-
-                    <!--<th>Guest</th>
-    <th>Plate</th>
-    <th>Spoon</th>
-    <th>Fork</th>
-    <th>Glass</th>
-    <th>Chair</th>
-    <th>Table</th>
-
-    <th>Sound System</th>
-    <th>Flowers</th>-->
                 </tr>
             </thead>
             <tbody>
@@ -36,21 +25,34 @@
                     ng-class="{ 'text-warning': item.reservationStatus == 0, 'text-info': item.reservationStatus == 1, 'text-success': item.reservationStatus === 2, 'text-danger': item.reservationStatus === 3 }">
 
                     <td ng-if="$ctrl.selectedItem">
-                        
-                        <span ng-if="$ctrl.selectedItem === item" class="btn-group-sm">
+                       
+
+                        <span ng-if="$ctrl.selectedItem === item" class="btn-group btn-group-sm">
+
+                            <button ng-click="$ctrl.viewReservation()" class="btn btn-sm btn-outline-info">
+                                <span class="fas fa-fw fa-eye"></span> View
+                            </button>
                             <!--<button class="btn btn-outline-info">Send SMS</button>-->
 
-                            <button ng-if="$ctrl.selectedItem.reservationStatus === 1" ng-click="$ctrl.completeReservation()" class="btn btn-sm btn-outline-info">Complete</button>
+                            <button ng-if="$ctrl.selectedItem.reservationStatus === 2" ng-click="$ctrl.completeReservation()" class="btn btn-sm btn-outline-info">
+                                <span class="fas fa-fw fa-stamp"></span> Complete
+                            </button>
                             <button ng-if="$ctrl.selectedItem.reservationStatus === 0" ng-click="$ctrl.cancelReservation()" class="btn btn-sm btn-outline-danger">
-
                                 <span class="fas fa-fw fa-trash"></span> Cancel
+                            </button>
+
+                            <button ng-if="$ctrl.selectedItem.reservationStatus === 1" ng-click="$ctrl.acceptPayment()" class="btn btn-sm btn-outline-success">
+                                <span class="fas fa-fw fa-check"></span>&nbsp;Accept Payment
+                            </button>
+                            <button ng-if="$ctrl.selectedItem.reservationStatus === 1" ng-click="$ctrl.rejectPayment()" class="btn btn-sm btn-outline-warning">
+                                <span class="fas fa-fw fa-times"></span>&nbsp;Reject Payment
                             </button>
                         </span>
                     </td>
                     <td>{{item.reservationStatusText}}</td>
+                    <td>{{item.package.name}}</td>
                     <td>{{item.title}}</td>
                     <td>{{item.venue}}</td>
-                    <td>{{item.package.name}}</td>
                     <td>{{item.toNow}}</td>
                     <td>{{item.dateStart | date:'medium'}}</td>
                     <td>{{item.dateEnd | date:'medium'}}</td>
@@ -65,4 +67,216 @@
             </tbody>
         </table>
     </div>
+
+
+    <script type="text/ng-template" id="modalViewReservation.html">
+        <div class="modal-header">
+            <h3 class="modal-title">View Reservation</h3>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Package:</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.package.name}} - {{reservation.package.description}}</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Title:</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.title}}</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Address/Venue:</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.venue}}</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Date:</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.dateStart | date:'short'}} - {{reservation.dateEnd | date:'short'}}</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Total Price:</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.totalPrice | number:'2'}}</span>
+                    </div>
+                </div>
+                <!--<div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Guest Count:</label>
+                    <div class="col-sm-9">
+                        <span type="text" class="form-control-plaintext">{{reservation.guestCount | number:'0'}}</span>
+                    </div>
+                </div>-->
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Prefered Layouts:</label>
+                    <div class="col-sm-9">
+                        <img ng-src="{{img.imageUrl}}" ng-repeat="img in reservation.reservationItems" class="img-thumbnail" style="width:128px;height:128px;" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label text-right">Notes and Comments:</label>
+                    <div class="col-sm-9">
+                        <p class="form-control-plaintext" ng-repeat="note in reservation.notes">{{note.dateCreated |date:'short'}}: {{note.content}}</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-condensed table-sm table-hover m-0">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Count</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-right">Extended Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="p-0">
+                            <td class="text-right">
+                                Guest
+                            </td>
+                            <td>
+                                {{reservation.guestCount}}
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="text-right">Plates</td>
+                            <td>
+                                {{reservation.plateCount}}
+                            </td>
+                            <td class="text-right">
+                                {{reservation.platePrice | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ (reservation.platePrice * reservation.plateCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Spoons</td>
+                            <td>
+                                {{reservation.spoonCount}}
+                            </td>
+                            <td class="text-right">
+                                {{reservation.spoonPrice | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ (reservation.spoonPrice * reservation.spoonCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Forks</td>
+                            <td>
+                                {{reservation.forkCount}}
+                            </td>
+                            <td class="text-right">
+                                {{reservation.forkPrice | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ (reservation.forkPrice * reservation.forkCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Glasses</td>
+                            <td>
+                                {{reservation.glassCount}}
+                            </td>
+                            <td class="text-right">
+                                {{reservation.glassPrice | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ (reservation.glassPrice * reservation.glassCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Chairs</td>
+                            <td>
+                                {{reservation.chairCount}}
+                            </td>
+                            <td class="text-right">
+                                {{reservation.chairPrice | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ (reservation.chairPrice * reservation.chairCount) | number:'2'}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Tables</td>
+                            <td>
+                                {{reservation.tableCount}}
+                            </td>
+                            <td class="text-right">
+                                {{reservation.tablePrice | number:'2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ (reservation.tablePrice * reservation.tableCount) | number:'2'}}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-right">Flowers</td>
+                            <td>
+                                <input type="checkbox" ng-model="reservation.hasFlowers" readonly disabled />
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span ng-switch="reservation.hasFlowers">
+                                    <span ng-switch-when="true">
+                                        {{reservation.flowerPrice | number:'2'}}
+                                    </span>
+                                    <span ng-switch-default>
+                                        0
+                                    </span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Sound System</td>
+                            <td>
+                                <input type="checkbox" ng-model="reservation.hasSoundSystem" disabled />
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span ng-switch="reservation.hasSoundSystem">
+                                    <span ng-switch-when="true">
+                                        {{reservation.soundSystemPrice | number:'2'}}
+                                    </span>
+                                    <span ng-switch-default>
+                                        0
+                                    </span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="border-info">
+                            <td class="text-right">Fixed Cost</td>
+                            <td class="text-info">
+                                <small>This is for additional small items needed</small>
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span>{{reservation.fixedCost| number:'2'}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Fixed Labor</td>
+                            <td class="text-info">
+                                <small>This is for additional small labor needed</small>
+                            </td>
+                            <td colspan="2" class="text-right">
+                                <span>{{reservation.fixedLabor| number:'2'}}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <!--<button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>-->
+        </div>
+    </script>
 </div>

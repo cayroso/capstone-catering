@@ -22,12 +22,12 @@
                 <tr ng-repeat="item in $ctrl.items" ng-click="$ctrl.setSelectedItem(item)" ng-class="{'text-muted': item.dateSent !== null, 'text-danger': item.dateSent === null}">
                     <td>
                         <span ng-if="$ctrl.selectedItem === item" class="btn-group btn-group-sm">
-                            <button ng-click="$ctrl.resend(item.shortMessageId)" class="btn btn-warning">
+                            <button ng-click="$ctrl.resend(item.shortMessageId)" class="btn btn-outline-warning">
                                 Resend
                             </button>
-                            <!--<button class="btn btn-outline-danger">
-                                Cancel
-                            </button>-->
+                            <button ng-click="$ctrl.markAsSent(item.shortMessageId)" class="btn btn-outline-info">
+                                Mark as Sent
+                            </button>
                         </span>
                     </td>
                     <td>{{item.reservation.title}}</td>

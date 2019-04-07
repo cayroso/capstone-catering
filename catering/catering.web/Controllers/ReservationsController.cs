@@ -43,20 +43,30 @@ namespace catering.web.Controllers
                 return BadRequest("Cannot Reserve today");
             }
 
-            var startUtc = start.UtcDateTime;
-            var endUtc = end.UtcDateTime;
+            //var startUtc = start.UtcDateTime;
+            //var endUtc = end.UtcDateTime;
+
+            var startUtc = start.Date;
+            var endUtc = startUtc.AddDays(1).AddSeconds(-1);
 
             var found = await _appDbContext
                 .Reservations
-                .Where(p => (startUtc >= p.DateStart && startUtc <= p.DateEnd) || (endUtc >= p.DateStart && endUtc <= p.DateEnd))
+                .Where(p =>
+                    (p.ReservationStatus != ReservationStatus.Cancelled && p.ReservationStatus != ReservationStatus.Complete)
+                && (
+                    //(startUtc >= p.DateStart && startUtc <= p.DateEnd) || (endUtc >= p.DateStart && endUtc <= p.DateEnd))
+                    (p.DateStart >= startUtc && p.DateStart <= endUtc) || (p.DateEnd >= startUtc && p.DateEnd <= endUtc)
+                    )
+                )
                 .ToListAsync();
 
             if (found.Count >= 3)
             {
                 return BadRequest("Dates are already reserved");
             }
+            var availableSlots = 3 - found.Count;
 
-            return Ok();
+            return Ok(new { message = $"Only {availableSlots} slots available for the selected day." });
         }
 
         [HttpPost("addNote/{id}")]
